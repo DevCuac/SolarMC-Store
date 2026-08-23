@@ -7,6 +7,29 @@ export interface CategoryItem {
   sortOrder: number;
 }
 
+export interface NavLinkItem {
+  id: string;
+  label: string;
+  url: string;
+  icon: string;
+  isExternal: boolean;
+}
+
+export const DEFAULT_NAV_LINKS: NavLinkItem[] = [
+  { id: "nav-1", label: "Inicio", url: "/", icon: "home", isExternal: false },
+  { id: "nav-2", label: "Votos", url: "https://minecraft-server-list.com", icon: "vote", isExternal: true },
+  { id: "nav-3", label: "Wiki", url: "https://wiki.solarmc.net", icon: "wiki", isExternal: true },
+  { id: "nav-4", label: "Reglas", url: "/rules", icon: "reglas", isExternal: false },
+  { id: "nav-5", label: "Discord", url: "https://discord.gg/solarmc", icon: "discord", isExternal: true },
+];
+
+export const DEFAULT_ANNOUNCEMENTS: string[] = [
+  "🔥 SOLAR SALE: Use code WELCOME10 for 10% OFF! Claim your Free Starter Rank today!",
+  "⚡ Prison Season IV is now live with Overlord ranks & infinite block multipliers!",
+  "🎁 Join our official Discord community for weekly Solar Credits giveaways!",
+  "⚔️ Dungeons Raid Bosses have 2x Legendary Artifact Drop Rates this weekend!",
+];
+
 export const DEFAULT_CATEGORIES: CategoryItem[] = [
   { id: "cat-home", name: "Home", slug: "home", icon: "home", sortOrder: 0, description: "Featured bestsellers and store packages" },
   { id: "cat-prison", name: "Prison", slug: "prison", icon: "prison", sortOrder: 1, description: "Ranks, pickaxes, and cell upgrades" },

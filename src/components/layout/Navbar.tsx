@@ -13,12 +13,16 @@ import {
   ShoppingBag, 
   User, 
   LogOut,
-  Signal
+  Gamepad2,
+  ExternalLink,
+  ChevronRight
 } from "lucide-react";
 import { toast } from "sonner";
 import { useCart } from "@/context/CartContext";
 import { CategoryIcon } from "@/components/ui/CategoryIcon";
-import { DEFAULT_CATEGORIES } from "@/types";
+import { NavIcon } from "@/components/ui/NavIcon";
+import { AnnouncementBanner } from "@/components/layout/AnnouncementBanner";
+import { DEFAULT_CATEGORIES, DEFAULT_NAV_LINKS, DEFAULT_ANNOUNCEMENTS, NavLinkItem } from "@/types";
 import { copyToClipboard } from "@/lib/utils";
 
 export function Navbar() {
@@ -42,6 +46,8 @@ export function Navbar() {
   } = useCart();
 
   const [copied, setCopied] = useState(false);
+  const [navLinks, setNavLinks] = useState<NavLinkItem[]>(DEFAULT_NAV_LINKS);
+  const [announcements, setAnnouncements] = useState<string[]>(DEFAULT_ANNOUNCEMENTS);
   const [settings, setSettings] = useState<Record<string, string>>({
     server_name: "SolarMC",
     server_ip: "play.solarmc.net",
@@ -57,12 +63,36 @@ export function Navbar() {
     discord: { online: 2611, total: 8420 },
   });
 
-  // Load Settings & live server status
+  // Load Settings, dynamic nav links & live server status
   useEffect(() => {
     fetch("/api/settings")
       .then((res) => res.json())
       .then((data) => {
-        if (data.settings) setSettings(data.settings);
+        if (data.settings) {
+          setSettings(data.settings);
+
+          // Parse custom navigation links if present
+          if (data.settings.nav_links) {
+            try {
+              const parsed = JSON.parse(data.settings.nav_links);
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                setNavLinks(parsed);
+              }
+            } catch (e) {}
+          }
+
+          // Parse custom rotating announcements if present
+          if (data.settings.announcements) {
+            try {
+              const parsed = JSON.parse(data.settings.announcements);
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                setAnnouncements(parsed);
+              }
+            } catch (e) {}
+          } else if (data.settings.announcement_banner) {
+            setAnnouncements([data.settings.announcement_banner]);
+          }
+        }
       })
       .catch(() => {});
 
@@ -110,51 +140,53 @@ export function Navbar() {
 
   return (
     <header className="w-full">
-      {/* Top Announcement Strip */}
-      {settings.announcement_banner && (
-        <div className="bg-[#0e1017] border-b border-white/[0.06] py-1 px-4 text-center text-xs font-medium text-amber-300/90 tracking-wide">
-          <span>{settings.announcement_banner}</span>
-        </div>
-      )}
+      {/* 1. Top Rotating Announcements Banner */}
+      <AnnouncementBanner announcements={announcements} />
 
-      {/* Top Utility Header */}
+      {/* 2. Top Navigation Bar (Editable Links on Left | Admin, Auth, Cart on Right) */}
       <div className="max-w-6xl mx-auto px-4 pt-3 pb-2">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
           
-          {/* Server Connection Pill & Live Discord Count */}
-          <div className="flex items-center space-x-2.5 w-full sm:w-auto justify-between sm:justify-start">
-            {/* Copy Server IP button */}
-            <button
-              onClick={handleCopyIP}
-              className="flex items-center space-x-2 bg-[#12141d] hover:bg-[#181b27] border border-white/[0.08] hover:border-amber-500/40 px-3 py-1.5 rounded-lg text-zinc-300 hover:text-white transition-all group shadow-sm active:scale-[0.98]"
-              title="Click para copiar la IP del servidor"
-            >
-              <span className={`w-2 h-2 rounded-full ${liveStatus.minecraft.online ? "bg-emerald-400 animate-pulse" : "bg-zinc-500"}`} />
-              <span className="font-mono font-semibold text-amber-300">{settings.server_ip || "play.solarmc.net"}</span>
-              <span className="text-[11px] text-zinc-500 font-medium">
-                ({liveStatus.minecraft.players.toLocaleString()} online)
-              </span>
-              <span className="text-zinc-500 group-hover:text-amber-400 pl-1">
-                {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-              </span>
-            </button>
+          {/* Left: Dynamic Editable Navigation Links (Inicio, Votos, Wiki, Reglas, etc.) */}
+          <nav className="flex items-center space-x-1 sm:space-x-2 overflow-x-auto w-full sm:w-auto scrollbar-none py-1">
+            {navLinks.map((link) => {
+              const isInternal = link.url.startsWith("/") && !link.isExternal;
+              const isCurrent = isInternal && pathname === link.url;
 
-            <span className="text-zinc-700 hidden sm:inline">•</span>
+              if (isInternal) {
+                return (
+                  <Link
+                    key={link.id || link.label}
+                    href={link.url}
+                    className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
+                      isCurrent
+                        ? "bg-white/[0.08] text-amber-300 shadow-sm border border-amber-500/30"
+                        : "text-zinc-300 hover:text-white hover:bg-white/[0.05]"
+                    }`}
+                  >
+                    <NavIcon name={link.icon} className="w-3.5 h-3.5" />
+                    <span>{link.label}</span>
+                  </Link>
+                );
+              }
 
-            {/* Discord Link with Live Count */}
-            <a
-              href={settings.discord_url || "https://discord.gg/solarmc"}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center space-x-1.5 text-zinc-400 hover:text-indigo-300 bg-[#12141d] hover:bg-[#181b27] border border-white/[0.08] px-3 py-1.5 rounded-lg transition-all shadow-sm group"
-            >
-              <MessageSquare className="w-3.5 h-3.5 text-indigo-400" />
-              <span>Discord: <strong className="text-zinc-200">{liveStatus.discord.online.toLocaleString()}</strong></span>
-            </a>
-          </div>
+              return (
+                <a
+                  key={link.id || link.label}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-zinc-300 hover:text-white hover:bg-white/[0.05] transition-all whitespace-nowrap group"
+                >
+                  <NavIcon name={link.icon} className="w-3.5 h-3.5 text-zinc-400 group-hover:text-amber-300 transition-colors" />
+                  <span>{link.label}</span>
+                </a>
+              );
+            })}
+          </nav>
 
-          {/* Right Utility: Admin, Auth, Cart */}
-          <div className="flex items-center space-x-2 w-full sm:w-auto justify-end">
+          {/* Right: Admin, User Auth, Cart */}
+          <div className="flex items-center space-x-2 w-full sm:w-auto justify-end flex-shrink-0">
             {isAdmin && (
               <Link
                 href="/admin"
@@ -208,26 +240,94 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Hero Branding with Logo */}
-      <div className="max-w-6xl mx-auto px-4 py-3 flex flex-col items-center justify-center text-center">
-        <Link href="/" className="group flex flex-col items-center">
-          <div className="relative w-36 h-36 sm:w-44 sm:h-44 flex items-center justify-center -my-2">
-            <Image
-              src="/logo.png"
-              alt="SolarMC Logo"
-              width={180}
-              height={180}
-              priority
-              className="object-contain drop-shadow-[0_0_25px_rgba(245,158,11,0.35)] group-hover:scale-105 transition-transform duration-300"
-            />
+      {/* 3. Hero Section (3-Column Layout matching media_1787453171775.png):
+          Left: Jugar Ahora / Copiar IP | Center: SolarMC Logo | Right: Discord Unirte */}
+      <div className="max-w-6xl mx-auto px-4 py-6">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+          
+          {/* Left Box: JUGAR AHORA / COPIAR IP */}
+          <div className="md:col-span-4 order-2 md:order-1">
+            <div 
+              onClick={handleCopyIP}
+              className="cursor-pointer bg-[#11131c]/90 hover:bg-[#161925] border border-white/[0.08] hover:border-amber-500/50 rounded-2xl p-4 shadow-[0_4px_25px_rgba(0,0,0,0.4)] hover:shadow-[0_10px_35px_rgba(245,158,11,0.12)] transition-all duration-300 flex items-center justify-between group"
+            >
+              <div className="space-y-1">
+                <div className="flex items-center space-x-2">
+                  <span className={`w-2 h-2 rounded-full ${liveStatus.minecraft.online ? "bg-emerald-400 animate-pulse" : "bg-zinc-500"}`} />
+                  <span className="text-[10px] font-black uppercase tracking-wider text-amber-400">
+                    JUGAR AHORA
+                  </span>
+                </div>
+                <div className="text-sm font-black text-white font-mono group-hover:text-amber-300 transition-colors">
+                  {settings.server_ip || "play.solarmc.net"}
+                </div>
+                <div className="text-[11px] text-zinc-400 font-medium">
+                  {liveStatus.minecraft.players.toLocaleString()} jugadores en línea
+                </div>
+              </div>
+
+              {/* Action Circle */}
+              <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.08] group-hover:border-amber-500/40 group-hover:bg-amber-500/10 flex items-center justify-center text-zinc-400 group-hover:text-amber-400 transition-all flex-shrink-0">
+                {copied ? <Check className="w-5 h-5 text-emerald-400" /> : <Copy className="w-5 h-5" />}
+              </div>
+            </div>
           </div>
-          <span className="text-[10px] sm:text-[11px] font-extrabold tracking-[0.25em] uppercase text-amber-300/80 -mt-1">
-            OFFICIAL MINECRAFT NETWORK STORE
-          </span>
-        </Link>
+
+          {/* Center Box: SolarMC Main Logo Emblem */}
+          <div className="md:col-span-4 order-1 md:order-2 flex flex-col items-center justify-center text-center">
+            <Link href="/" className="group flex flex-col items-center">
+              <div className="relative w-36 h-36 sm:w-44 sm:h-44 flex items-center justify-center -my-2">
+                <Image
+                  src="/logo.png"
+                  alt="SolarMC Logo"
+                  width={180}
+                  height={180}
+                  priority
+                  className="object-contain drop-shadow-[0_0_25px_rgba(245,158,11,0.35)] group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <span className="text-[10px] sm:text-[11px] font-extrabold tracking-[0.25em] uppercase text-amber-300/80 -mt-1">
+                OFFICIAL MINECRAFT NETWORK STORE
+              </span>
+            </Link>
+          </div>
+
+          {/* Right Box: DISCORD / UNIRTE */}
+          <div className="md:col-span-4 order-3">
+            <a
+              href={settings.discord_url || "https://discord.gg/solarmc"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block bg-[#11131c]/90 hover:bg-[#161925] border border-white/[0.08] hover:border-indigo-500/50 rounded-2xl p-4 shadow-[0_4px_25px_rgba(0,0,0,0.4)] hover:shadow-[0_10px_35px_rgba(88,101,242,0.12)] transition-all duration-300 group"
+            >
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <div className="flex items-center space-x-2">
+                    <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
+                    <span className="text-[10px] font-black uppercase tracking-wider text-indigo-400">
+                      DISCORD OFICIAL
+                    </span>
+                  </div>
+                  <div className="text-sm font-black text-white group-hover:text-indigo-300 transition-colors">
+                    discord.gg/solarmc
+                  </div>
+                  <div className="text-[11px] text-zinc-400 font-medium">
+                    {liveStatus.discord.online.toLocaleString()} miembros conectados
+                  </div>
+                </div>
+
+                {/* Action Circle */}
+                <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.08] group-hover:border-indigo-500/40 group-hover:bg-[#5865F2]/10 flex items-center justify-center text-zinc-400 group-hover:text-indigo-400 transition-all flex-shrink-0">
+                  <MessageSquare className="w-5 h-5" />
+                </div>
+              </div>
+            </a>
+          </div>
+
+        </div>
       </div>
 
-      {/* Sleek, Professional Category Bar */}
+      {/* 4. Sleek, Professional Category Bar Underneath Hero */}
       <div className="w-full max-w-6xl mx-auto px-4 mb-6">
         <nav className="w-full bg-[#10121a]/95 border border-white/[0.08] rounded-xl p-1 shadow-lg backdrop-blur-md overflow-x-auto scrollbar-none">
           <div className="flex items-center justify-start md:justify-center min-w-max space-x-1">
