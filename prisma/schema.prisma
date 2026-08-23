@@ -1,11 +1,11 @@
-// Prisma schema for Solar Store (Minecraft Store OPLegends style)
+// Prisma schema for Solar Store (Minecraft Store) with MySQL support
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -15,12 +15,12 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String?
-  access_token      String?
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String?
+  id_token          String? @db.Text
   session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -66,8 +66,8 @@ model Category {
   id          String    @id @default(cuid())
   name        String
   slug        String    @unique
-  icon        String?   // Emoji or icon name (e.g. "⚡", "⛏️", "🌌", "⚔️", "📦", "🌱", "🌐")
-  description String?
+  icon        String?
+  description String?   @db.Text
   sortOrder   Int       @default(0)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -79,13 +79,13 @@ model Product {
   id            String    @id @default(cuid())
   name          String
   slug          String    @unique
-  description   String
+  description   String    @db.Text
   price         Float
   originalPrice Float?
   badge         String?   // "BEST SELLER", "MONTHLY", "POPULAR", "SALE -20%", etc.
-  icon          String?   // Minecraft item icon or URL
-  perks         String    // JSON string array of bullet points
-  commands      String?   // JSON string array of in-game console commands e.g. ["give {player} diamond 64", "lp user {player} parent add vip"]
+  icon          String?   // item icon key or URL
+  perks         String    @db.Text // JSON string array of bullet points
+  commands      String?   @db.Text // JSON string array of in-game console commands
   isActive      Boolean   @default(true)
   sortOrder     Int       @default(0)
   categoryId    String
@@ -121,7 +121,7 @@ model Order {
   discountTotal     Float    @default(0)
   couponCode        String?
   status            String   @default("COMPLETED") // "COMPLETED" | "PENDING" | "REFUNDED" | "CANCELLED"
-  items             String   // JSON string array of [{productId, name, price, quantity, badge}]
+  items             String   @db.Text // JSON string array of purchased items
   commandsExecuted  Boolean  @default(true)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -129,15 +129,15 @@ model Order {
 
 model ContentPage {
   id        String   @id @default(cuid())
-  slug      String   @unique // "terms", "privacy", "impressum", "rules", "disclaimer"
+  slug      String   @unique // "terms", "privacy", "impressum", "rules"
   title     String
-  content   String
+  content   String   @db.Text
   updatedAt DateTime @updatedAt
 }
 
 model StoreSetting {
   id        String   @id @default(cuid())
   key       String   @unique
-  value     String
+  value     String   @db.Text
   updatedAt DateTime @updatedAt
 }
