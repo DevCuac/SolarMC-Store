@@ -34,8 +34,8 @@ export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
 
-  // Do not render storefront Navbar/Hero on admin or dedicated profile dashboard pages
-  if (pathname?.startsWith("/admin") || pathname?.startsWith("/profile")) {
+  // Do not render storefront Navbar/Hero on admin dashboard pages
+  if (pathname?.startsWith("/admin")) {
     return null;
   }
 
@@ -347,126 +347,130 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* 3. Hero Section (3-Column Layout: Jugar Ahora | Logo SolarMC | Discord Unirte) */}
-      <div className="max-w-6xl mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
-          
-          {/* Left Box: JUGAR AHORA / COPIAR IP */}
-          <div className="md:col-span-4 order-2 md:order-1">
-            <div 
-              onClick={handleCopyIP}
-              className="cursor-pointer bg-[#11131c]/90 hover:bg-[#161925] border border-white/[0.08] hover:border-amber-500/50 rounded-2xl p-4 shadow-[0_4px_25px_rgba(0,0,0,0.4)] hover:shadow-[0_10px_35px_rgba(245,158,11,0.12)] transition-all duration-300 flex items-center justify-between group"
-            >
-              <div className="space-y-1">
-                <div className="flex items-center space-x-2">
-                  <span className={`w-2 h-2 rounded-full ${liveStatus.minecraft.online ? "bg-emerald-400 animate-pulse" : "bg-zinc-500"}`} />
-                  <span className="text-[10px] font-black uppercase tracking-wider text-amber-400">
-                    JUGAR AHORA
-                  </span>
-                </div>
-                <div className="text-sm font-black text-white font-mono group-hover:text-amber-300 transition-colors">
-                  {settings.server_ip || "play.solarmc.net"}
-                </div>
-                <div className="text-[11px] text-zinc-400 font-medium">
-                  {liveStatus.minecraft.players.toLocaleString()} jugadores en línea
+      {/* 3. Hero Section & 4. Category Bar (Only rendered on the main store page '/') */}
+      {pathname === "/" && (
+        <>
+          <div className="max-w-6xl mx-auto px-4 py-6">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+              
+              {/* Left Box: JUGAR AHORA / COPIAR IP */}
+              <div className="md:col-span-4 order-2 md:order-1">
+                <div 
+                  onClick={handleCopyIP}
+                  className="cursor-pointer bg-[#11131c]/90 hover:bg-[#161925] border border-white/[0.08] hover:border-amber-500/50 rounded-2xl p-4 shadow-[0_4px_25px_rgba(0,0,0,0.4)] hover:shadow-[0_10px_35px_rgba(245,158,11,0.12)] transition-all duration-300 flex items-center justify-between group"
+                >
+                  <div className="space-y-1">
+                    <div className="flex items-center space-x-2">
+                      <span className={`w-2 h-2 rounded-full ${liveStatus.minecraft.online ? "bg-emerald-400 animate-pulse" : "bg-zinc-500"}`} />
+                      <span className="text-[10px] font-black uppercase tracking-wider text-amber-400">
+                        JUGAR AHORA
+                      </span>
+                    </div>
+                    <div className="text-sm font-black text-white font-mono group-hover:text-amber-300 transition-colors">
+                      {settings.server_ip || "play.solarmc.net"}
+                    </div>
+                    <div className="text-[11px] text-zinc-400 font-medium">
+                      {liveStatus.minecraft.players.toLocaleString()} jugadores en línea
+                    </div>
+                  </div>
+
+                  {/* Action Circle */}
+                  <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.08] group-hover:border-amber-500/40 group-hover:bg-amber-500/10 flex items-center justify-center text-zinc-400 group-hover:text-amber-400 transition-all flex-shrink-0">
+                    {copied ? <Check className="w-5 h-5 text-emerald-400" /> : <Copy className="w-5 h-5" />}
+                  </div>
                 </div>
               </div>
 
-              {/* Action Circle */}
-              <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.08] group-hover:border-amber-500/40 group-hover:bg-amber-500/10 flex items-center justify-center text-zinc-400 group-hover:text-amber-400 transition-all flex-shrink-0">
-                {copied ? <Check className="w-5 h-5 text-emerald-400" /> : <Copy className="w-5 h-5" />}
+              {/* Center Box: SolarMC Main Logo Emblem */}
+              <div className="md:col-span-4 order-1 md:order-2 flex flex-col items-center justify-center text-center">
+                <Link href="/" className="group flex flex-col items-center">
+                  <div className="relative w-36 h-36 sm:w-44 sm:h-44 flex items-center justify-center -my-2">
+                    <Image
+                      src="/logo.png"
+                      alt="SolarMC Logo"
+                      width={180}
+                      height={180}
+                      priority
+                      className="object-contain drop-shadow-[0_0_25px_rgba(245,158,11,0.35)] group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  <span className="text-[10px] sm:text-[11px] font-extrabold tracking-[0.25em] uppercase text-amber-300/80 -mt-1">
+                    OFFICIAL MINECRAFT NETWORK STORE
+                  </span>
+                </Link>
               </div>
+
+              {/* Right Box: DISCORD / UNIRTE */}
+              <div className="md:col-span-4 order-3">
+                <a
+                  href={settings.discord_url || "https://discord.gg/solarmc"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block bg-[#11131c]/90 hover:bg-[#161925] border border-white/[0.08] hover:border-indigo-500/50 rounded-2xl p-4 shadow-[0_4px_25px_rgba(0,0,0,0.4)] hover:shadow-[0_10px_35px_rgba(88,101,242,0.12)] transition-all duration-300 group"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <div className="flex items-center space-x-2">
+                        <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
+                        <span className="text-[10px] font-black uppercase tracking-wider text-indigo-400">
+                          DISCORD OFICIAL
+                        </span>
+                      </div>
+                      <div className="text-sm font-black text-white group-hover:text-indigo-300 transition-colors">
+                        discord.gg/solarmc
+                      </div>
+                      <div className="text-[11px] text-zinc-400 font-medium">
+                        {liveStatus.discord.online.toLocaleString()} miembros conectados
+                      </div>
+                    </div>
+
+                    {/* Action Circle */}
+                    <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.08] group-hover:border-indigo-500/40 group-hover:bg-[#5865F2]/10 flex items-center justify-center text-zinc-400 group-hover:text-indigo-400 transition-all flex-shrink-0">
+                      <MessageSquare className="w-5 h-5" />
+                    </div>
+                  </div>
+                </a>
+              </div>
+
             </div>
           </div>
 
-          {/* Center Box: SolarMC Main Logo Emblem */}
-          <div className="md:col-span-4 order-1 md:order-2 flex flex-col items-center justify-center text-center">
-            <Link href="/" className="group flex flex-col items-center">
-              <div className="relative w-36 h-36 sm:w-44 sm:h-44 flex items-center justify-center -my-2">
-                <Image
-                  src="/logo.png"
-                  alt="SolarMC Logo"
-                  width={180}
-                  height={180}
-                  priority
-                  className="object-contain drop-shadow-[0_0_25px_rgba(245,158,11,0.35)] group-hover:scale-105 transition-transform duration-300"
-                />
+          {/* 4. Category Bar Underneath Hero */}
+          <div className="w-full max-w-6xl mx-auto px-4 mb-6">
+            <nav className="w-full bg-[#10121a]/95 border border-white/[0.08] rounded-xl p-1 shadow-lg backdrop-blur-md overflow-x-auto scrollbar-none">
+              <div className="flex items-center justify-start md:justify-center min-w-max space-x-1">
+                {navCategories.map((category) => {
+                  const isActive = selectedCategory === category.slug;
+                  return (
+                    <button
+                      key={category.id || category.slug}
+                      onClick={() => handleCategoryClick(category.slug)}
+                      className={`relative flex items-center space-x-2 px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-all duration-150 whitespace-nowrap group ${
+                        isActive
+                          ? "bg-white/[0.08] text-white shadow-sm font-semibold"
+                          : "text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.04]"
+                      }`}
+                    >
+                      <CategoryIcon 
+                        iconName={category.icon || category.slug} 
+                        className={`w-4 h-4 transition-colors ${
+                          isActive ? "text-amber-400" : "text-zinc-400 group-hover:text-zinc-200"
+                        }`} 
+                      />
+                      <span>{category.name}</span>
+
+                      {/* Bottom solar accent line for active category */}
+                      {isActive && (
+                        <span className="absolute bottom-0 left-2.5 right-2.5 h-[2px] bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 rounded-full shadow-[0_0_8px_rgba(245,158,11,0.6)]" />
+                      )}
+                    </button>
+                  );
+                })}
               </div>
-              <span className="text-[10px] sm:text-[11px] font-extrabold tracking-[0.25em] uppercase text-amber-300/80 -mt-1">
-                OFFICIAL MINECRAFT NETWORK STORE
-              </span>
-            </Link>
+            </nav>
           </div>
-
-          {/* Right Box: DISCORD / UNIRTE */}
-          <div className="md:col-span-4 order-3">
-            <a
-              href={settings.discord_url || "https://discord.gg/solarmc"}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block bg-[#11131c]/90 hover:bg-[#161925] border border-white/[0.08] hover:border-indigo-500/50 rounded-2xl p-4 shadow-[0_4px_25px_rgba(0,0,0,0.4)] hover:shadow-[0_10px_35px_rgba(88,101,242,0.12)] transition-all duration-300 group"
-            >
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <div className="flex items-center space-x-2">
-                    <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
-                    <span className="text-[10px] font-black uppercase tracking-wider text-indigo-400">
-                      DISCORD OFICIAL
-                    </span>
-                  </div>
-                  <div className="text-sm font-black text-white group-hover:text-indigo-300 transition-colors">
-                    discord.gg/solarmc
-                  </div>
-                  <div className="text-[11px] text-zinc-400 font-medium">
-                    {liveStatus.discord.online.toLocaleString()} miembros conectados
-                  </div>
-                </div>
-
-                {/* Action Circle */}
-                <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.08] group-hover:border-indigo-500/40 group-hover:bg-[#5865F2]/10 flex items-center justify-center text-zinc-400 group-hover:text-indigo-400 transition-all flex-shrink-0">
-                  <MessageSquare className="w-5 h-5" />
-                </div>
-              </div>
-            </a>
-          </div>
-
-        </div>
-      </div>
-
-      {/* 4. Category Bar Underneath Hero */}
-      <div className="w-full max-w-6xl mx-auto px-4 mb-6">
-        <nav className="w-full bg-[#10121a]/95 border border-white/[0.08] rounded-xl p-1 shadow-lg backdrop-blur-md overflow-x-auto scrollbar-none">
-          <div className="flex items-center justify-start md:justify-center min-w-max space-x-1">
-            {navCategories.map((category) => {
-              const isActive = selectedCategory === category.slug;
-              return (
-                <button
-                  key={category.id || category.slug}
-                  onClick={() => handleCategoryClick(category.slug)}
-                  className={`relative flex items-center space-x-2 px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-all duration-150 whitespace-nowrap group ${
-                    isActive
-                      ? "bg-white/[0.08] text-white shadow-sm font-semibold"
-                      : "text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.04]"
-                  }`}
-                >
-                  <CategoryIcon 
-                    iconName={category.icon || category.slug} 
-                    className={`w-4 h-4 transition-colors ${
-                      isActive ? "text-amber-400" : "text-zinc-400 group-hover:text-zinc-200"
-                    }`} 
-                  />
-                  <span>{category.name}</span>
-
-                  {/* Bottom solar accent line for active category */}
-                  {isActive && (
-                    <span className="absolute bottom-0 left-2.5 right-2.5 h-[2px] bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 rounded-full shadow-[0_0_8px_rgba(245,158,11,0.6)]" />
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </nav>
-      </div>
+        </>
+      )}
     </header>
   );
 }

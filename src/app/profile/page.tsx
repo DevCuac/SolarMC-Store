@@ -189,58 +189,22 @@ function ProfileDashboardContent() {
   const isAdmin = effectiveRole === "ADMIN";
 
   return (
-    <div className="min-h-screen bg-[#090a0f] text-zinc-100 flex flex-col">
+    <div className="w-full max-w-6xl mx-auto px-4 py-8 space-y-6">
       
-      {/* 1. Dedicated Clean Header for User Dashboard */}
-      <header className="bg-[#0e1017] border-b border-white/[0.08] sticky top-0 z-40 backdrop-blur-md">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          
-          {/* Brand and Breadcrumb */}
-          <div className="flex items-center space-x-3">
-            <Link href="/" className="flex items-center space-x-2.5 group">
-              <div className="relative w-8 h-8 flex items-center justify-center">
-                <Image
-                  src="/logo.png"
-                  alt="SolarMC Logo"
-                  width={32}
-                  height={32}
-                  className="object-contain drop-shadow-md group-hover:scale-105 transition-transform"
-                />
-              </div>
-              <div>
-                <span className="font-bold text-white text-sm tracking-tight block">SolarMC Portal</span>
-                <span className="text-[10px] text-amber-400 font-semibold tracking-wider uppercase block">
-                  Panel de Usuario
-                </span>
-              </div>
-            </Link>
-          </div>
-
-          {/* User Controls on Right */}
-          <div className="flex items-center space-x-3">
-            {/* User pill */}
-            <div className="flex items-center space-x-2.5 px-3 py-1.5 bg-[#11131c] border border-white/[0.08] rounded-xl">
-              <img
-                src={getMinecraftHeadRender(effectiveMcUsername)}
-                alt="Minecraft Skin"
-                className="w-6 h-6 rounded-md border border-white/[0.1] object-contain"
-                onError={(e) => {
-                  (e.target as HTMLElement).setAttribute(
-                    "src",
-                    "https://mc-heads.net/head/steve/128"
-                  );
-                }}
-              />
-              <div className="text-left hidden sm:block">
-                <div className="text-xs font-bold text-white leading-tight max-w-[130px] truncate">
-                  {effectiveName}
-                </div>
-                <div className="text-[10px] text-zinc-400 leading-none truncate font-mono">
-                  {effectiveEmail}
-                </div>
-              </div>
-
-              {/* Role badge */}
+      {/* Profile Header Banner */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/[0.08]">
+        <div className="flex items-center space-x-3.5">
+          <img
+            src={getMinecraftHeadRender(effectiveMcUsername)}
+            alt="Skin Head"
+            className="w-12 h-12 rounded-xl border border-white/[0.12] object-contain shadow-lg"
+            onError={(e) => {
+              (e.target as HTMLElement).setAttribute("src", "https://mc-heads.net/head/steve/128");
+            }}
+          />
+          <div>
+            <div className="flex items-center space-x-2.5">
+              <h1 className="text-xl font-bold text-white tracking-tight">{effectiveName}</h1>
               <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider ${
                 effectiveRole === "ADMIN"
                   ? "bg-amber-500/20 text-amber-300 border border-amber-500/40"
@@ -251,85 +215,73 @@ function ProfileDashboardContent() {
                 {effectiveRole}
               </span>
             </div>
-
-            {/* Return to Webstore */}
-            <Link
-              href="/"
-              className="flex items-center space-x-1.5 px-3.5 py-1.5 bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] text-zinc-200 hover:text-white rounded-lg text-xs font-semibold transition-all shadow-sm"
-              title="Volver a la tienda principal"
-            >
-              <ArrowLeft className="w-3.5 h-3.5 text-amber-400" />
-              <span className="hidden sm:inline">Tienda</span>
-            </Link>
-
-            {/* Logout button */}
-            <button
-              onClick={() => signOut({ callbackUrl: "/" })}
-              className="p-2 text-zinc-400 hover:text-red-400 bg-white/[0.04] hover:bg-red-500/10 border border-white/[0.08] rounded-lg transition-colors"
-              title="Cerrar Sesión"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
+            <p className="text-xs text-zinc-400 font-mono mt-0.5">{effectiveEmail}</p>
           </div>
-
         </div>
-      </header>
 
-      {/* 2. Main Dashboard Body */}
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 py-8 space-y-6">
-        
-        {/* Navigation Tabs */}
-        <div className="flex items-center justify-between border-b border-white/[0.08] pb-1 gap-2 flex-wrap">
-          <div className="flex items-center space-x-2 overflow-x-auto scrollbar-none py-1">
-            <button
-              onClick={() => setActiveTab("account")}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-semibold text-xs transition-all ${
-                activeTab === "account"
-                  ? "bg-white/[0.08] text-white border-b-2 border-amber-500 shadow-sm font-bold"
-                  : "text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.04]"
-              }`}
-            >
-              <User className="w-4 h-4 text-amber-400" />
-              <span>Mi Cuenta & Seguridad</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab("orders")}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-semibold text-xs transition-all ${
-                activeTab === "orders"
-                  ? "bg-white/[0.08] text-white border-b-2 border-amber-500 shadow-sm font-bold"
-                  : "text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.04]"
-              }`}
-            >
-              <ShoppingBag className="w-4 h-4 text-blue-400" />
-              <span>Historial de Compras ({profileData?.orders?.length || 0})</span>
-            </button>
-
-            {isPartnerOrAdmin && (
-              <button
-                onClick={() => setActiveTab("finances")}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-semibold text-xs transition-all ${
-                  activeTab === "finances"
-                    ? "bg-purple-500/20 text-purple-200 border-b-2 border-purple-400 shadow-sm font-bold"
-                    : "text-zinc-400 hover:text-purple-300 hover:bg-purple-500/10"
-                }`}
-              >
-                <Award className="w-4 h-4 text-purple-400" />
-                <span>Finanzas de Partner</span>
-              </button>
-            )}
-          </div>
-
+        <div className="flex items-center space-x-2 self-start sm:self-auto">
           {isAdmin && (
             <Link
               href="/admin"
-              className="px-3.5 py-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded-lg text-xs font-bold transition-all flex items-center space-x-1.5"
+              className="px-3.5 py-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded-lg text-xs font-bold transition-all flex items-center space-x-1.5 shadow-sm"
             >
               <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
               <span>Admin Dashboard</span>
             </Link>
           )}
+
+          <button
+            onClick={() => signOut({ callbackUrl: "/" })}
+            className="px-3.5 py-1.5 text-zinc-300 hover:text-red-400 bg-white/[0.04] hover:bg-red-500/10 border border-white/[0.08] rounded-lg transition-colors text-xs font-semibold flex items-center space-x-1.5"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            <span>Cerrar Sesión</span>
+          </button>
         </div>
+      </div>
+
+      {/* Navigation Tabs */}
+      <div className="flex items-center justify-between border-b border-white/[0.08] pb-1 gap-2 flex-wrap">
+        <div className="flex items-center space-x-2 overflow-x-auto scrollbar-none py-1">
+          <button
+            onClick={() => setActiveTab("account")}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-semibold text-xs transition-all ${
+              activeTab === "account"
+                ? "bg-white/[0.08] text-white border-b-2 border-amber-500 shadow-sm font-bold"
+                : "text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.04]"
+            }`}
+          >
+            <User className="w-4 h-4 text-amber-400" />
+            <span>Mi Cuenta & Seguridad</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("orders")}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-semibold text-xs transition-all ${
+              activeTab === "orders"
+                ? "bg-white/[0.08] text-white border-b-2 border-amber-500 shadow-sm font-bold"
+                : "text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.04]"
+            }`}
+          >
+            <ShoppingBag className="w-4 h-4 text-blue-400" />
+            <span>Historial de Compras ({profileData?.orders?.length || 0})</span>
+          </button>
+
+          {isPartnerOrAdmin && (
+            <button
+              onClick={() => setActiveTab("finances")}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-semibold text-xs transition-all ${
+                activeTab === "finances"
+                  ? "bg-purple-500/20 text-purple-200 border-b-2 border-purple-400 shadow-sm font-bold"
+                : "text-zinc-400 hover:text-purple-300 hover:bg-purple-500/10"
+              }`}
+            >
+              <Award className="w-4 h-4 text-purple-400" />
+              <span>Finanzas de Partner</span>
+            </button>
+          )}
+        </div>
+      </div>
 
         {/* Tab 1: Mi Cuenta & Seguridad */}
         {activeTab === "account" && (
@@ -809,8 +761,6 @@ function ProfileDashboardContent() {
             </div>
           </div>
         )}
-
-      </main>
     </div>
   );
 }
