@@ -18,7 +18,8 @@ import {
   Menu,
   X,
   ExternalLink,
-  Flame
+  Flame,
+  Users
 } from "lucide-react";
 
 const navSections = [
@@ -35,6 +36,7 @@ const navSections = [
       { name: "Categories", href: "/admin/categories", icon: Layers },
       { name: "Discount Coupons", href: "/admin/coupons", icon: Tag },
       { name: "Orders & Sales", href: "/admin/orders", icon: ShoppingCart },
+      { name: "Users & Partners", href: "/admin/users", icon: Users },
     ],
   },
   {

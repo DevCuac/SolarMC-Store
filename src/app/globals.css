@@ -7,6 +7,17 @@
   --foreground: #ffffff;
 }
 
+/* Solar Gold Selection Color */
+::selection {
+  background-color: rgba(245, 158, 11, 0.35);
+  color: #ffffff;
+}
+
+::-moz-selection {
+  background-color: rgba(245, 158, 11, 0.35);
+  color: #ffffff;
+}
+
 body {
   background-color: #0c0e16;
   color: #ffffff;

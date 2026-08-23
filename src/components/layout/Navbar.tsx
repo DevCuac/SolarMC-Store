@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -13,17 +13,22 @@ import {
   ShoppingBag, 
   User, 
   LogOut,
-  Gamepad2,
-  ExternalLink,
-  ChevronRight
+  ChevronDown,
+  Award,
+  DollarSign,
+  History,
+  Shield,
+  Layers,
+  Settings
 } from "lucide-react";
 import { toast } from "sonner";
 import { useCart } from "@/context/CartContext";
+import { usePlayer } from "@/context/PlayerContext";
 import { CategoryIcon } from "@/components/ui/CategoryIcon";
 import { NavIcon } from "@/components/ui/NavIcon";
 import { AnnouncementBanner } from "@/components/layout/AnnouncementBanner";
 import { DEFAULT_CATEGORIES, DEFAULT_NAV_LINKS, DEFAULT_ANNOUNCEMENTS, NavLinkItem } from "@/types";
-import { copyToClipboard } from "@/lib/utils";
+import { copyToClipboard, getMinecraftHeadRender } from "@/lib/utils";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -35,6 +40,7 @@ export function Navbar() {
   }
 
   const { data: session } = useSession();
+  const { minecraftUsername } = usePlayer();
   const { 
     setIsAuthModalOpen, 
     setAuthModalTab, 
@@ -46,6 +52,9 @@ export function Navbar() {
   } = useCart();
 
   const [copied, setCopied] = useState(false);
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
   const [navLinks, setNavLinks] = useState<NavLinkItem[]>(DEFAULT_NAV_LINKS);
   const [announcements, setAnnouncements] = useState<string[]>(DEFAULT_ANNOUNCEMENTS);
   const [settings, setSettings] = useState<Record<string, string>>({
@@ -63,6 +72,17 @@ export function Navbar() {
     discord: { online: 2611, total: 8420 },
   });
 
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setUserDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   // Load Settings, dynamic nav links & live server status
   useEffect(() => {
     fetch("/api/settings")
@@ -71,7 +91,7 @@ export function Navbar() {
         if (data.settings) {
           setSettings(data.settings);
 
-          // Parse custom navigation links if present
+          // Parse custom navigation links
           if (data.settings.nav_links) {
             try {
               const parsed = JSON.parse(data.settings.nav_links);
@@ -81,7 +101,7 @@ export function Navbar() {
             } catch (e) {}
           }
 
-          // Parse custom rotating announcements if present
+          // Parse custom rotating announcements
           if (data.settings.announcements) {
             try {
               const parsed = JSON.parse(data.settings.announcements);
@@ -126,8 +146,13 @@ export function Navbar() {
     }
   };
 
-  const isAdmin = (session?.user as any)?.role === "ADMIN" || 
-                  session?.user?.email?.toLowerCase().trim() === "angelriveradeveloper@gmail.com";
+  const userRole = (session?.user as any)?.role || "USER";
+  const userEmail = session?.user?.email?.toLowerCase().trim() || "";
+  const isAdmin = userRole === "ADMIN" || userEmail === "angelriveradeveloper@gmail.com";
+  const isPartner = userRole === "PARTNER" || isAdmin;
+
+  const displayName = session?.user?.name || (session?.user as any)?.minecraftUsername || userEmail.split("@")[0] || "Mi Cuenta";
+  const mcPlayerRender = (session?.user as any)?.minecraftUsername || minecraftUsername || userEmail || "Steve";
 
   const handleCategoryClick = (slug: string) => {
     setSelectedCategory(slug);
@@ -143,7 +168,7 @@ export function Navbar() {
       {/* 1. Top Rotating Announcements Banner */}
       <AnnouncementBanner announcements={announcements} />
 
-      {/* 2. Top Navigation Bar (Editable Links on Left | Admin, Auth, Cart on Right) */}
+      {/* 2. Top Navigation Bar (Links on Left | user_displayname & Cart on Right) */}
       <div className="max-w-6xl mx-auto px-4 pt-3 pb-2">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
           
@@ -185,40 +210,122 @@ export function Navbar() {
             })}
           </nav>
 
-          {/* Right: Admin, User Auth, Cart */}
-          <div className="flex items-center space-x-2 w-full sm:w-auto justify-end flex-shrink-0">
-            {isAdmin && (
-              <Link
-                href="/admin"
-                className="flex items-center space-x-1.5 px-3 py-1.5 bg-amber-500/10 text-amber-300 border border-amber-500/30 hover:border-amber-500/60 rounded-lg text-xs font-semibold transition-all shadow-sm"
-              >
-                <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
-                <span>Admin</span>
-              </Link>
-            )}
-
+          {/* Right: [user_displayname Dropdown] & [Cart Button] */}
+          <div className="flex items-center space-x-2.5 w-full sm:w-auto justify-end flex-shrink-0">
+            
+            {/* User Dropdown Button (or Sign In) */}
             {!session ? (
               <button
                 onClick={() => {
                   setAuthModalTab("signin");
                   setIsAuthModalOpen(true);
                 }}
-                className="flex items-center space-x-1.5 px-3 py-1.5 bg-[#12141d] hover:bg-[#181b27] border border-white/[0.08] text-zinc-300 hover:text-white rounded-lg font-medium transition-all shadow-sm"
+                className="flex items-center space-x-2 px-3.5 py-1.5 bg-[#12141d] hover:bg-[#181b27] border border-white/[0.08] text-zinc-200 hover:text-white rounded-lg font-medium transition-all shadow-sm"
               >
                 <User className="w-3.5 h-3.5 text-zinc-400" />
-                <span>Sign In</span>
+                <span>Iniciar Sesión</span>
               </button>
             ) : (
-              <div className="flex items-center space-x-2">
-                <span className="text-zinc-400 hidden md:inline truncate max-w-[120px]">
-                  {session.user?.email || session.user?.name}
-                </span>
+              <div className="relative" ref={dropdownRef}>
                 <button
-                  onClick={() => signOut()}
-                  className="px-2.5 py-1 rounded-lg bg-red-950/20 hover:bg-red-900/40 border border-red-800/30 text-red-400 hover:text-red-300 transition-all font-medium text-xs"
+                  onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                  className="flex items-center space-x-2 px-3 py-1.5 bg-[#12141d] hover:bg-[#181b27] border border-white/[0.08] hover:border-amber-500/40 text-zinc-200 hover:text-white rounded-lg font-medium transition-all shadow-sm group"
                 >
-                  Logout
+                  <img
+                    src={getMinecraftHeadRender(mcPlayerRender)}
+                    alt="Skin Head"
+                    className="w-5 h-5 rounded border border-white/[0.1] object-contain"
+                  />
+                  <span className="font-semibold text-xs text-white max-w-[130px] truncate">
+                    {displayName}
+                  </span>
+                  
+                  {/* Mini Role Indicator Pill */}
+                  {userRole !== "USER" && (
+                    <span className={`text-[9px] font-black uppercase px-1.5 py-0.2 rounded border ${
+                      isAdmin
+                        ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
+                        : "bg-purple-500/20 text-purple-300 border-purple-500/40"
+                    }`}>
+                      {userRole}
+                    </span>
+                  )}
+
+                  <ChevronDown className={`w-3.5 h-3.5 text-zinc-400 group-hover:text-amber-300 transition-transform duration-200 ${userDropdownOpen ? "rotate-180" : ""}`} />
                 </button>
+
+                {/* Floating User Dropdown Menu */}
+                {userDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-56 bg-[#11131c] border border-white/[0.1] rounded-xl shadow-2xl py-1.5 z-50 animate-modal">
+                    
+                    {/* User Header */}
+                    <div className="px-3.5 py-2 border-b border-white/[0.07]">
+                      <div className="text-xs font-bold text-white truncate">{displayName}</div>
+                      <div className="text-[10px] text-zinc-400 truncate">{userEmail}</div>
+                    </div>
+
+                    <div className="py-1">
+                      {/* Mi Cuenta */}
+                      <Link
+                        href="/profile"
+                        onClick={() => setUserDropdownOpen(false)}
+                        className="flex items-center space-x-2.5 px-3.5 py-2 text-xs text-zinc-300 hover:text-white hover:bg-white/[0.05] transition-colors"
+                      >
+                        <User className="w-3.5 h-3.5 text-amber-400" />
+                        <span>Mi Perfil & Datos</span>
+                      </Link>
+
+                      {/* Historial de Compras */}
+                      <Link
+                        href="/profile?tab=orders"
+                        onClick={() => setUserDropdownOpen(false)}
+                        className="flex items-center space-x-2.5 px-3.5 py-2 text-xs text-zinc-300 hover:text-white hover:bg-white/[0.05] transition-colors"
+                      >
+                        <History className="w-3.5 h-3.5 text-blue-400" />
+                        <span>Historial de Compras</span>
+                      </Link>
+
+                      {/* Finanzas de Partner (Solo Partners / Admins) */}
+                      {isPartner && (
+                        <Link
+                          href="/profile?tab=finances"
+                          onClick={() => setUserDropdownOpen(false)}
+                          className="flex items-center space-x-2.5 px-3.5 py-2 text-xs text-purple-300 hover:text-purple-200 hover:bg-purple-500/10 transition-colors font-semibold"
+                        >
+                          <Award className="w-3.5 h-3.5 text-purple-400" />
+                          <span>Finanzas de Partner</span>
+                        </Link>
+                      )}
+
+                      {/* Admin Console (Solo Admins) */}
+                      {isAdmin && (
+                        <Link
+                          href="/admin"
+                          onClick={() => setUserDropdownOpen(false)}
+                          className="flex items-center space-x-2.5 px-3.5 py-2 text-xs text-amber-300 hover:text-amber-200 hover:bg-amber-500/10 transition-colors font-semibold border-t border-white/[0.05]"
+                        >
+                          <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+                          <span>Admin Dashboard</span>
+                        </Link>
+                      )}
+                    </div>
+
+                    {/* Logout */}
+                    <div className="border-t border-white/[0.07] pt-1">
+                      <button
+                        onClick={() => {
+                          setUserDropdownOpen(false);
+                          signOut();
+                        }}
+                        className="w-full flex items-center space-x-2.5 px-3.5 py-2 text-xs text-red-400 hover:text-red-300 hover:bg-red-950/20 transition-colors text-left"
+                      >
+                        <LogOut className="w-3.5 h-3.5" />
+                        <span>Cerrar Sesión</span>
+                      </button>
+                    </div>
+
+                  </div>
+                )}
               </div>
             )}
 
@@ -240,8 +347,7 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* 3. Hero Section (3-Column Layout matching media_1787453171775.png):
-          Left: Jugar Ahora / Copiar IP | Center: SolarMC Logo | Right: Discord Unirte */}
+      {/* 3. Hero Section (3-Column Layout: Jugar Ahora | Logo SolarMC | Discord Unirte) */}
       <div className="max-w-6xl mx-auto px-4 py-6">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
           
@@ -327,7 +433,7 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* 4. Sleek, Professional Category Bar Underneath Hero */}
+      {/* 4. Category Bar Underneath Hero */}
       <div className="w-full max-w-6xl mx-auto px-4 mb-6">
         <nav className="w-full bg-[#10121a]/95 border border-white/[0.08] rounded-xl p-1 shadow-lg backdrop-blur-md overflow-x-auto scrollbar-none">
           <div className="flex items-center justify-start md:justify-center min-w-max space-x-1">
@@ -351,7 +457,7 @@ export function Navbar() {
                   />
                   <span>{category.name}</span>
 
-                  {/* Refined bottom solar accent line for active category */}
+                  {/* Bottom solar accent line for active category */}
                   {isActive && (
                     <span className="absolute bottom-0 left-2.5 right-2.5 h-[2px] bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 rounded-full shadow-[0_0_8px_rgba(245,158,11,0.6)]" />
                   )}

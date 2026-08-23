@@ -24,6 +24,10 @@ interface CartContextType {
   coupon: AppliedCoupon | null;
   applyCoupon: (code: string) => Promise<{ success: boolean; message: string }>;
   removeCoupon: () => void;
+  creatorCode: string | null;
+  creatorName: string | null;
+  applyCreatorCode: (code: string) => Promise<{ success: boolean; message: string }>;
+  removeCreatorCode: () => void;
   isCartOpen: boolean;
   setIsCartOpen: (open: boolean) => void;
   isRankModalOpen: boolean;
@@ -45,6 +49,9 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [coupon, setCoupon] = useState<AppliedCoupon | null>(null);
+  const [creatorCode, setCreatorCode] = useState<string | null>(null);
+  const [creatorName, setCreatorName] = useState<string | null>(null);
+
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isRankModalOpen, setIsRankModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -54,7 +61,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [categories, setCategories] = useState<CategoryItem[]>(DEFAULT_CATEGORIES);
   const [mounted, setMounted] = useState(false);
 
-  // Fetch categories from database to sync any custom categories
+  // Fetch categories from database
   useEffect(() => {
     fetch("/api/admin/categories")
       .then((res) => res.json())
@@ -78,6 +85,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       if (savedCoupon) {
         setCoupon(JSON.parse(savedCoupon));
       }
+      const savedCreator = localStorage.getItem("solar_creator_code");
+      if (savedCreator) {
+        setCreatorCode(savedCreator);
+      }
+      const savedCreatorName = localStorage.getItem("solar_creator_name");
+      if (savedCreatorName) {
+        setCreatorName(savedCreatorName);
+      }
     } catch (e) {
       console.error("Failed to load cart from storage", e);
     }
@@ -93,10 +108,20 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       } else {
         localStorage.removeItem("solar_cart_coupon");
       }
+      if (creatorCode) {
+        localStorage.setItem("solar_creator_code", creatorCode);
+      } else {
+        localStorage.removeItem("solar_creator_code");
+      }
+      if (creatorName) {
+        localStorage.setItem("solar_creator_name", creatorName);
+      } else {
+        localStorage.removeItem("solar_creator_name");
+      }
     } catch (e) {
       console.error("Failed to save cart to storage", e);
     }
-  }, [items, coupon, mounted]);
+  }, [items, coupon, creatorCode, creatorName, mounted]);
 
   const addToCart = (product: ProductItem) => {
     setItems((prev) => {
@@ -170,7 +195,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const applyCoupon = async (code: string): Promise<{ success: boolean; message: string }> => {
     if (!code || code.trim() === "") {
-      return { success: false, message: "Please enter a coupon code" };
+      return { success: false, message: "Ingresa un código de descuento" };
     }
 
     try {
@@ -187,18 +212,53 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         toast.success(data.message);
         return { success: true, message: data.message };
       } else {
-        toast.error(data.message || "Invalid coupon code");
-        return { success: false, message: data.message || "Invalid coupon code" };
+        toast.error(data.message || "Código de descuento inválido");
+        return { success: false, message: data.message || "Código inválido" };
       }
     } catch (e) {
-      toast.error("Failed to validate coupon");
-      return { success: false, message: "Server error validating coupon" };
+      toast.error("Error al validar cupón");
+      return { success: false, message: "Error al validar cupón" };
     }
   };
 
   const removeCoupon = () => {
     setCoupon(null);
-    toast.info("Coupon removed");
+    toast.info("Cupón eliminado");
+  };
+
+  const applyCreatorCode = async (code: string): Promise<{ success: boolean; message: string }> => {
+    if (!code || code.trim() === "") {
+      return { success: false, message: "Ingresa un código de creador" };
+    }
+
+    try {
+      const res = await fetch("/api/creator-code/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: code.trim() }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.valid) {
+        setCreatorCode(data.creator.code);
+        setCreatorName(data.creator.name);
+        toast.success(`¡Apoyando al creador ${data.creator.name} (${data.creator.code})!`);
+        return { success: true, message: `Apoyando a ${data.creator.name}` };
+      } else {
+        toast.error(data.error || "Código de creador no encontrado");
+        return { success: false, message: data.error || "No encontrado" };
+      }
+    } catch (e) {
+      toast.error("Error al verificar código de creador");
+      return { success: false, message: "Error al conectar con el servidor" };
+    }
+  };
+
+  const removeCreatorCode = () => {
+    setCreatorCode(null);
+    setCreatorName(null);
+    toast.info("Código de creador eliminado");
   };
 
   return (
@@ -216,6 +276,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         coupon,
         applyCoupon,
         removeCoupon,
+        creatorCode,
+        creatorName,
+        applyCreatorCode,
+        removeCreatorCode,
         isCartOpen,
         setIsCartOpen,
         isRankModalOpen,

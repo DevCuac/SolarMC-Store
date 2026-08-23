@@ -14,6 +14,7 @@ export async function POST(req: Request) {
       minecraftEdition = "Java",
       customerEmail,
       couponCode,
+      creatorCode,
     } = body;
 
     if (!items || !Array.isArray(items) || items.length === 0) {
@@ -62,6 +63,7 @@ export async function POST(req: Request) {
       });
     }
 
+    // 1. Validate Discount Coupon (if any)
     let discountTotal = 0;
     let appliedCoupon = null;
 
@@ -93,7 +95,27 @@ export async function POST(req: Request) {
     }
 
     const finalTotal = Math.max(0, calculatedSubtotal - discountTotal);
-    const orderNumber = `OPL-${Math.floor(100000 + Math.random() * 900000)}`;
+
+    // 2. Validate Partner / Creator Code (Support-A-Creator)
+    let creditedPartner = null;
+    let creatorCommission = 0;
+
+    if (creatorCode && typeof creatorCode === "string" && creatorCode.trim() !== "") {
+      const cleanCreator = creatorCode.trim().toUpperCase();
+      creditedPartner = await prisma.user.findFirst({
+        where: {
+          creatorCode: cleanCreator,
+          role: { in: ["PARTNER", "ADMIN"] },
+        },
+      });
+
+      if (creditedPartner) {
+        const rate = creditedPartner.creatorCommissionRate || 10;
+        creatorCommission = parseFloat(((finalTotal * rate) / 100).toFixed(2));
+      }
+    }
+
+    const orderNumber = `SOL-${Math.floor(100000 + Math.random() * 900000)}`;
 
     const order = await prisma.order.create({
       data: {
@@ -106,6 +128,9 @@ export async function POST(req: Request) {
         discountTotal: parseFloat(discountTotal.toFixed(2)),
         total: parseFloat(finalTotal.toFixed(2)),
         couponCode: appliedCoupon ? appliedCoupon.code : null,
+        creatorCode: creditedPartner ? creditedPartner.creatorCode : null,
+        creatorCommission,
+        partnerId: creditedPartner ? creditedPartner.id : null,
         status: "COMPLETED",
         items: JSON.stringify(validatedItems),
         commandsExecuted: true,
@@ -118,6 +143,7 @@ export async function POST(req: Request) {
       total: order.total,
       subtotal: order.subtotal,
       discountTotal: order.discountTotal,
+      creatorCode: order.creatorCode,
       minecraftUsername: order.minecraftUsername,
       message: `Order #${order.orderNumber} placed successfully! Digital perks are now dispatched to ${order.minecraftUsername}.`,
     });

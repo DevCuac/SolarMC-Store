@@ -45,21 +45,31 @@ model VerificationToken {
 }
 
 model User {
-  id                String    @id @default(cuid())
-  name              String?
-  email             String?   @unique
-  emailVerified     DateTime?
-  password          String?
-  role              String    @default("USER") // "USER" | "ADMIN"
-  image             String?
-  minecraftUsername String?
-  minecraftEdition  String?   @default("Java") // "Java" | "Bedrock"
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  id                    String    @id @default(cuid())
+  name                  String?
+  email                 String?   @unique
+  emailVerified         DateTime?
+  password              String?
+  role                  String    @default("USER") // "USER" | "PARTNER" | "ADMIN"
+  image                 String?
+  minecraftUsername     String?
+  minecraftEdition      String?   @default("Java") // "Java" | "Bedrock"
+  
+  // Partner & Creator Code Program
+  creatorCode           String?   @unique // e.g. "CUAC", "SOLAR"
+  creatorCommissionRate Float?    @default(10) // e.g. 10.0 = 10%
+  
+  // Social Account Linking Info
+  discordId             String?
+  discordUsername       String?
+  googleId              String?
 
-  accounts Account[]
-  sessions Session[]
-  orders   Order[]
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  accounts              Account[]
+  sessions              Session[]
+  orders                Order[]
 }
 
 model Category {
@@ -120,6 +130,12 @@ model Order {
   subtotal          Float
   discountTotal     Float    @default(0)
   couponCode        String?
+
+  // Support-A-Creator Partner Tracking
+  creatorCode       String?  // Creator code used during checkout
+  creatorCommission Float?   @default(0) // Earnings credited to partner
+  partnerId         String?  // ID of partner user
+
   status            String   @default("COMPLETED") // "COMPLETED" | "PENDING" | "REFUNDED" | "CANCELLED"
   items             String   @db.Text // JSON string array of purchased items
   commandsExecuted  Boolean  @default(true)

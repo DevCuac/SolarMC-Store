@@ -11,7 +11,9 @@ import {
   CreditCard, 
   Loader2,
   Tag,
-  ShieldCheck
+  ShieldCheck,
+  Award,
+  Sparkles
 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { usePlayer } from "@/context/PlayerContext";
@@ -32,6 +34,10 @@ export function CartDrawer() {
     coupon,
     applyCoupon,
     removeCoupon,
+    creatorCode,
+    creatorName,
+    applyCreatorCode,
+    removeCreatorCode,
     isCartOpen,
     setIsCartOpen,
   } = useCart();
@@ -40,6 +46,10 @@ export function CartDrawer() {
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [couponInput, setCouponInput] = useState("");
   const [isCouponSubmitting, setIsCouponSubmitting] = useState(false);
+  
+  const [creatorInput, setCreatorInput] = useState("");
+  const [isCreatorSubmitting, setIsCreatorSubmitting] = useState(false);
+
   const [customUsername, setCustomUsername] = useState(minecraftUsername);
   const [isEditingUsername, setIsEditingUsername] = useState(false);
 
@@ -54,15 +64,24 @@ export function CartDrawer() {
     if (res.success) setCouponInput("");
   };
 
+  const handleApplyCreator = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!creatorInput.trim()) return;
+    setIsCreatorSubmitting(true);
+    const res = await applyCreatorCode(creatorInput);
+    setIsCreatorSubmitting(false);
+    if (res.success) setCreatorInput("");
+  };
+
   const handleCheckout = async () => {
     if (items.length === 0) {
-      toast.error("Your cart is empty");
+      toast.error("Tu carrito está vacío");
       return;
     }
 
     const recipientPlayer = isEditingUsername ? customUsername.trim() : minecraftUsername.trim();
     if (!recipientPlayer) {
-      toast.error("Please enter your Minecraft username for delivery");
+      toast.error("Por favor ingresa tu usuario de Minecraft para la entrega");
       setIsEditingUsername(true);
       return;
     }
@@ -78,6 +97,7 @@ export function CartDrawer() {
           minecraftUsername: recipientPlayer,
           minecraftEdition,
           couponCode: coupon ? coupon.code : null,
+          creatorCode: creatorCode || null,
         }),
       });
 
@@ -94,15 +114,15 @@ export function CartDrawer() {
 
         clearCart();
         setIsCartOpen(false);
-        toast.success("Order completed successfully!", {
-          description: `Order #${data.orderNumber} dispatched to ${data.minecraftUsername}`,
+        toast.success("¡Pedido completado con éxito!", {
+          description: `Orden #${data.orderNumber} enviada a ${data.minecraftUsername}`,
         });
         router.push(`/checkout/success?orderNumber=${data.orderNumber}`);
       } else {
-        toast.error(data.error || "Failed to process checkout");
+        toast.error(data.error || "Error al procesar el pago");
       }
     } catch (e) {
-      toast.error("An unexpected error occurred during checkout");
+      toast.error("Ocurrió un error inesperado al procesar la compra");
     } finally {
       setCheckoutLoading(false);
     }
@@ -119,37 +139,37 @@ export function CartDrawer() {
       />
 
       <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
-        <div className="w-screen max-w-md bg-[#121522] border-l border-[#1e2336] text-white shadow-2xl flex flex-col justify-between">
+        <div className="w-screen max-w-md bg-[#10121a] border-l border-white/[0.08] text-white shadow-2xl flex flex-col justify-between">
           
           {/* Header */}
-          <div className="p-5 border-b border-[#1e2336] flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-9 h-9 rounded-lg bg-[#181d2e] border border-[#242b40] flex items-center justify-center text-[#ff9d00]">
-                <ShoppingBag className="w-4.5 h-4.5" />
+          <div className="p-4 border-b border-white/[0.08] flex items-center justify-between">
+            <div className="flex items-center space-x-2.5">
+              <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                <ShoppingBag className="w-4 h-4" />
               </div>
               <div>
-                <h3 className="text-base font-black text-white">Your Shopping Cart</h3>
-                <p className="text-xs text-gray-400">
-                  {items.length} {items.length === 1 ? "item" : "items"} in cart
+                <h3 className="text-sm font-bold text-white">Carrito de Compras</h3>
+                <p className="text-[11px] text-zinc-400">
+                  {items.length} {items.length === 1 ? "artículo" : "artículos"}
                 </p>
               </div>
             </div>
 
             <button
               onClick={() => setIsCartOpen(false)}
-              className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-[#181d2e] transition-colors"
+              className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.05] transition-colors"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
 
           {/* Minecraft Player Delivery Preview */}
-          <div className="bg-[#0e1019] px-5 py-2.5 border-b border-[#1e2336] flex items-center justify-between">
+          <div className="bg-[#090a0f] px-4 py-2 border-b border-white/[0.08] flex items-center justify-between">
             <div className="flex items-center space-x-2.5">
               <img
                 src={getMinecraftHeadRender(currentUsername)}
                 alt="Minecraft Skin"
-                className="w-8 h-8 rounded border border-[#242b40] object-contain"
+                className="w-7 h-7 rounded border border-white/[0.1] object-contain"
                 onError={(e) => {
                   (e.target as HTMLElement).setAttribute(
                     "src",
@@ -158,16 +178,16 @@ export function CartDrawer() {
                 }}
               />
               <div>
-                <div className="text-[9px] uppercase font-bold text-gray-400 tracking-wider">
-                  Delivering to
+                <div className="text-[9px] uppercase font-bold text-zinc-500 tracking-wider">
+                  Entregando a
                 </div>
                 {isEditingUsername ? (
                   <input
                     type="text"
                     value={customUsername}
                     onChange={(e) => setCustomUsername(e.target.value)}
-                    placeholder="Enter MC Username"
-                    className="bg-[#181d2e] border border-[#242b40] rounded px-2 py-0.5 text-xs text-white outline-none w-32"
+                    placeholder="Usuario MC"
+                    className="bg-[#11131c] border border-white/[0.1] rounded px-2 py-0.5 text-xs text-white outline-none w-32"
                   />
                 ) : (
                   <div className="text-xs font-bold text-amber-300">
@@ -191,54 +211,54 @@ export function CartDrawer() {
               }}
               className="text-xs text-amber-400 hover:underline font-semibold"
             >
-              {isEditingUsername ? "Save" : "Change"}
+              {isEditingUsername ? "Guardar" : "Cambiar"}
             </button>
           </div>
 
           {/* Items List */}
-          <div className="flex-1 overflow-y-auto p-5 space-y-3">
+          <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
             {items.length === 0 ? (
-              <div className="text-center py-12">
-                <ShoppingBag className="w-10 h-10 text-gray-600 mx-auto mb-2.5" />
-                <p className="text-sm font-bold text-gray-300">Your cart is empty</p>
-                <p className="text-xs text-gray-500 mt-1">
-                  Add ranks, credits or packages to continue
+              <div className="text-center py-16">
+                <ShoppingBag className="w-8 h-8 text-zinc-600 mx-auto mb-2" />
+                <p className="text-xs font-bold text-zinc-300">Tu carrito está vacío</p>
+                <p className="text-[11px] text-zinc-500 mt-0.5">
+                  Añade rangos o créditos para continuar
                 </p>
               </div>
             ) : (
               items.map((item) => (
                 <div
                   key={item.productId}
-                  className="bg-[#181d2e] border border-[#22293e] rounded-lg p-3.5 flex flex-col space-y-2.5"
+                  className="bg-[#141724] border border-white/[0.06] rounded-xl p-3 flex flex-col space-y-2"
                 >
                   <div className="flex items-start justify-between">
                     <div>
                       {item.badge && (
-                        <span className="inline-block text-[9px] font-extrabold uppercase px-1.5 py-0.2 bg-[#22293e] text-amber-300 rounded mb-1 border border-[#2b334a]">
+                        <span className="inline-block text-[9px] font-bold uppercase px-1.5 py-0.2 bg-amber-500/10 text-amber-300 rounded mb-0.5 border border-amber-500/20">
                           {item.badge}
                         </span>
                       )}
                       <h4 className="text-xs font-bold text-white">{item.name}</h4>
-                      <p className="text-xs font-semibold text-amber-400 mt-0.5">
-                        {formatCurrency(item.price)} each
+                      <p className="text-xs font-semibold text-amber-400">
+                        {formatCurrency(item.price)}
                       </p>
                     </div>
 
                     <button
                       onClick={() => removeFromCart(item.productId)}
-                      className="text-gray-500 hover:text-red-400 p-1 transition-colors"
-                      title="Remove item"
+                      className="text-zinc-500 hover:text-red-400 p-1 transition-colors"
+                      title="Eliminar artículo"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
 
                   {/* Quantity Controls & Subtotal */}
-                  <div className="flex items-center justify-between pt-2 border-t border-[#1e2438]">
-                    <div className="flex items-center space-x-2 bg-[#0e1019] border border-[#202638] rounded-md p-1">
+                  <div className="flex items-center justify-between pt-2 border-t border-white/[0.05]">
+                    <div className="flex items-center space-x-2 bg-[#090a0f] border border-white/[0.08] rounded-md p-0.5">
                       <button
                         onClick={() => updateQuantity(item.productId, item.quantity - 1)}
-                        className="p-0.5 text-gray-400 hover:text-white rounded hover:bg-[#181d2e] transition-colors"
+                        className="p-1 text-zinc-400 hover:text-white rounded hover:bg-white/[0.05] transition-colors"
                       >
                         <Minus className="w-3 h-3" />
                       </button>
@@ -247,7 +267,7 @@ export function CartDrawer() {
                       </span>
                       <button
                         onClick={() => updateQuantity(item.productId, item.quantity + 1)}
-                        className="p-0.5 text-gray-400 hover:text-white rounded hover:bg-[#181d2e] transition-colors"
+                        className="p-1 text-zinc-400 hover:text-white rounded hover:bg-white/[0.05] transition-colors"
                       >
                         <Plus className="w-3 h-3" />
                       </button>
@@ -264,59 +284,87 @@ export function CartDrawer() {
 
           {/* Footer / Summary & Checkout */}
           {items.length > 0 && (
-            <div className="p-5 bg-[#0e1019] border-t border-[#1e2336] space-y-3.5">
-              {/* Coupon Form */}
+            <div className="p-4 bg-[#090a0f] border-t border-white/[0.08] space-y-3">
+              
+              {/* 1. Coupon Form */}
               {coupon ? (
-                <div className="flex items-center justify-between bg-amber-950/30 border border-amber-500/30 px-3 py-1.5 rounded-lg text-xs">
+                <div className="flex items-center justify-between bg-amber-500/10 border border-amber-500/30 px-3 py-1.5 rounded-lg text-xs">
                   <div className="flex items-center space-x-1.5 text-amber-300 font-bold">
                     <Tag className="w-3.5 h-3.5" />
                     <span>
                       {coupon.code} (
                       {coupon.discountType === "PERCENTAGE"
                         ? `${coupon.discountValue}% OFF`
-                        : `$${coupon.discountValue.toFixed(2)} OFF`}
+                        : `${formatCurrency(coupon.discountValue)} OFF`}
                       )
                     </span>
                   </div>
-                  <button
-                    onClick={removeCoupon}
-                    className="text-gray-400 hover:text-red-400"
-                  >
+                  <button onClick={removeCoupon} className="text-zinc-400 hover:text-red-400">
                     <X className="w-3.5 h-3.5" />
                   </button>
                 </div>
               ) : (
-                <form onSubmit={handleApplyCoupon} className="flex space-x-2">
+                <form onSubmit={handleApplyCoupon} className="flex space-x-1.5">
                   <input
                     type="text"
                     value={couponInput}
                     onChange={(e) => setCouponInput(e.target.value)}
-                    placeholder="Coupon code (e.g. WELCOME10)"
-                    className="flex-1 bg-[#181d2e] border border-[#22293e] focus:border-[#ff9d00] rounded-lg px-3 py-1.5 text-xs text-white placeholder-gray-500 outline-none"
+                    placeholder="Código de Descuento (ej. WELCOME10)"
+                    className="flex-1 bg-[#141724] border border-white/[0.08] focus:border-amber-500/50 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-zinc-500 outline-none uppercase font-mono"
                   />
                   <button
                     type="submit"
                     disabled={isCouponSubmitting || !couponInput.trim()}
-                    className="px-3.5 py-1.5 bg-[#20263b] hover:bg-[#28314a] disabled:opacity-50 text-xs font-bold text-white rounded-lg transition-colors"
+                    className="px-3 py-1.5 bg-white/[0.06] hover:bg-white/[0.1] disabled:opacity-50 text-xs font-bold text-white rounded-lg transition-colors"
                   >
-                    {isCouponSubmitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Apply"}
+                    {isCouponSubmitting ? <Loader2 className="w-3 h-3 animate-spin" /> : "Aplicar"}
+                  </button>
+                </form>
+              )}
+
+              {/* 2. Support A Creator / Partner Code */}
+              {creatorCode ? (
+                <div className="flex items-center justify-between bg-purple-500/10 border border-purple-500/30 px-3 py-1.5 rounded-lg text-xs">
+                  <div className="flex items-center space-x-1.5 text-purple-300 font-bold">
+                    <Award className="w-3.5 h-3.5 text-purple-400" />
+                    <span>Creador apoyado: <strong className="text-white">{creatorCode}</strong></span>
+                  </div>
+                  <button onClick={removeCreatorCode} className="text-zinc-400 hover:text-red-400">
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleApplyCreator} className="flex space-x-1.5">
+                  <input
+                    type="text"
+                    value={creatorInput}
+                    onChange={(e) => setCreatorInput(e.target.value)}
+                    placeholder="Código de Creador / Partner (ej. CUAC)"
+                    className="flex-1 bg-[#141724] border border-white/[0.08] focus:border-purple-500/50 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-zinc-500 outline-none uppercase font-mono"
+                  />
+                  <button
+                    type="submit"
+                    disabled={isCreatorSubmitting || !creatorInput.trim()}
+                    className="px-3 py-1.5 bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 disabled:opacity-50 text-xs font-bold rounded-lg transition-colors border border-purple-500/30"
+                  >
+                    {isCreatorSubmitting ? <Loader2 className="w-3 h-3 animate-spin" /> : "Apoyar"}
                   </button>
                 </form>
               )}
 
               {/* Price Calculations */}
-              <div className="space-y-1 text-xs">
-                <div className="flex justify-between text-gray-400">
+              <div className="space-y-1 text-xs pt-1">
+                <div className="flex justify-between text-zinc-400">
                   <span>Subtotal</span>
                   <span>{formatCurrency(subtotal)}</span>
                 </div>
                 {discountTotal > 0 && (
                   <div className="flex justify-between text-amber-400 font-semibold">
-                    <span>Discount</span>
+                    <span>Descuento</span>
                     <span>-{formatCurrency(discountTotal)}</span>
                   </div>
                 )}
-                <div className="flex justify-between text-sm font-extrabold text-white pt-1.5 border-t border-[#1e2336]">
+                <div className="flex justify-between text-sm font-bold text-white pt-1.5 border-t border-white/[0.08]">
                   <span>Total</span>
                   <span className="text-amber-300 font-black">{formatCurrency(total)}</span>
                 </div>
@@ -326,24 +374,24 @@ export function CartDrawer() {
               <button
                 onClick={handleCheckout}
                 disabled={checkoutLoading}
-                className="w-full py-3 px-4 rounded-lg font-black text-black text-xs sm:text-sm bg-[#ff9d00] hover:bg-[#ffad26] shadow-[0_0_15px_rgba(255,157,0,0.3)] hover:shadow-[0_0_20px_rgba(255,157,0,0.5)] disabled:opacity-50 transition-all flex items-center justify-center space-x-2"
+                className="w-full py-2.5 px-4 rounded-xl font-black text-black text-xs sm:text-sm bg-amber-500 hover:bg-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.3)] hover:shadow-[0_0_20px_rgba(245,158,11,0.5)] disabled:opacity-50 transition-all flex items-center justify-center space-x-2"
               >
                 {checkoutLoading ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin text-black" />
-                    <span>Processing Order...</span>
+                    <span>Procesando Pedido...</span>
                   </>
                 ) : (
                   <>
                     <CreditCard className="w-4 h-4 text-black" />
-                    <span>Complete Order ({formatCurrency(total)})</span>
+                    <span>Completar Compra ({formatCurrency(total)})</span>
                   </>
                 )}
               </button>
 
-              <div className="flex items-center justify-center space-x-1.5 text-[10px] text-gray-500">
-                <ShieldCheck className="w-3 h-3 text-[#ff9d00]" />
-                <span>Instant In-Game Delivery • Secure Checkout</span>
+              <div className="flex items-center justify-center space-x-1.5 text-[10px] text-zinc-500">
+                <ShieldCheck className="w-3 h-3 text-amber-400" />
+                <span>Entrega Inmediata en el Servidor • Pago Seguro</span>
               </div>
             </div>
           )}
