@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
@@ -102,8 +103,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Mobile Top Bar */}
       <div className="md:hidden bg-[#0e1017] border-b border-white/[0.08] p-3.5 flex items-center justify-between">
         <div className="flex items-center space-x-2.5">
-          <div className="w-7 h-7 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
-            <Flame className="w-4 h-4" />
+          <div className="relative w-7 h-7 flex items-center justify-center">
+            <Image
+              src="/logo.png"
+              alt="SolarMC Logo"
+              width={28}
+              height={28}
+              className="object-contain"
+            />
           </div>
           <span className="font-bold text-white text-sm tracking-tight">SolarMC Admin</span>
         </div>
@@ -125,8 +132,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           {/* Brand Header */}
           <div className="flex items-center justify-between pb-4 mb-5 border-b border-white/[0.07]">
             <div className="flex items-center space-x-2.5">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500/20 to-orange-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shadow-sm">
-                <Flame className="w-4.5 h-4.5" />
+              <div className="relative w-8 h-8 flex items-center justify-center">
+                <Image
+                  src="/logo.png"
+                  alt="SolarMC Logo"
+                  width={32}
+                  height={32}
+                  className="object-contain drop-shadow-sm"
+                />
               </div>
               <div>
                 <h1 className="text-xs font-bold text-white tracking-tight">SolarMC Network</h1>

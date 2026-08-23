@@ -198,8 +198,14 @@ function ProfileDashboardContent() {
           {/* Brand and Breadcrumb */}
           <div className="flex items-center space-x-3">
             <Link href="/" className="flex items-center space-x-2.5 group">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500/20 to-orange-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shadow-sm group-hover:scale-105 transition-transform">
-                <Flame className="w-4.5 h-4.5" />
+              <div className="relative w-8 h-8 flex items-center justify-center">
+                <Image
+                  src="/logo.png"
+                  alt="SolarMC Logo"
+                  width={32}
+                  height={32}
+                  className="object-contain drop-shadow-md group-hover:scale-105 transition-transform"
+                />
               </div>
               <div>
                 <span className="font-bold text-white text-sm tracking-tight block">SolarMC Portal</span>
