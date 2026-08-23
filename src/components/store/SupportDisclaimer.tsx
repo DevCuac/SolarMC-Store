@@ -12,15 +12,15 @@ export function SupportDisclaimer({ settings }: SupportDisclaimerProps) {
   const [infoModalOpen, setInfoModalOpen] = useState(false);
 
   const discordUrl = settings?.discord_url || "https://discord.gg/solarmc";
-  const supportEmail = settings?.support_email || "angelriveradeveloper@gmail.com";
-  const disclaimer1 = settings?.disclaimer_text_1 || "Credits are only usable under the terms of the SolarMC Credits Disclaimers. Credits are a virtual intangible currency which cannot be transferred outside of the SolarMC Network.";
-  const disclaimer2 = settings?.disclaimer_text_2 || "Please make sure you are well informed of our rules, terms of service, and privacy policy before making any purchase on our web store. All players are judged against the rules equally no matter their store purchases.";
-  const disclaimer3 = settings?.disclaimer_text_3 || "Purchases cannot be refunded under any circumstance. Opening a chargeback or dispute will result in an automatic and permanent ban from our Minecraft Network, our Tebex Store and other Tebex Stores.";
+  const supportEmail = settings?.support_email || "soporte@solarmc.net";
+  const disclaimer1 = settings?.disclaimer_text_1 || "Los créditos solo son utilizables bajo los términos de descargo de responsabilidad de SolarMC. Los créditos son una moneda virtual intangible que no se puede transferir fuera de la red SolarMC.";
+  const disclaimer2 = settings?.disclaimer_text_2 || "Por favor asegúrate de estar informado de nuestras reglas, términos de servicio y política de privacidad antes de realizar cualquier compra en nuestra tienda. Todos los jugadores son juzgados por igual ante las reglas sin importar sus compras en la tienda.";
+  const disclaimer3 = settings?.disclaimer_text_3 || "Las compras no se pueden reembolsar bajo ninguna circunstancia. Abrir un contracargo o disputa resultará en un baneo automático y permanente de nuestra red de Minecraft, nuestra tienda Tebex y otras tiendas Tebex.";
 
   return (
     <>
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 my-4">
-        {/* Support & Assistance (5 cols) */}
+        {/* Soporte y Asistencia (5 cols) */}
         <div className="lg:col-span-5 bg-[#121522] border border-[#1e2336] hover:border-[#28314a] rounded-xl p-6 shadow-[0_4px_20px_rgba(0,0,0,0.4)] flex flex-col justify-between transition-all duration-300">
           <div>
             <div className="flex items-center space-x-3 mb-2">
@@ -28,25 +28,25 @@ export function SupportDisclaimer({ settings }: SupportDisclaimerProps) {
                 <Headphones className="w-4.5 h-4.5" />
               </div>
               <h4 className="text-base font-black text-white tracking-wide">
-                Support & Assistance
+                Soporte & Asistencia
               </h4>
             </div>
             <p className="text-xs text-gray-400">
-              Need help with your order? Got any questions before you buy?
+              ¿Necesitas ayuda con tu pedido? ¿Tienes alguna duda antes de comprar?
             </p>
           </div>
 
           <div className="mt-5 space-y-2.5">
-            {/* More Information Button */}
+            {/* Botón Más Información */}
             <button
               onClick={() => setInfoModalOpen(true)}
               className="w-full py-2.5 px-4 rounded-lg font-black text-black text-xs bg-[#ff9d00] hover:bg-[#ffad26] shadow-[0_0_12px_rgba(255,157,0,0.25)] hover:shadow-[0_0_18px_rgba(255,157,0,0.4)] transition-all flex items-center justify-center space-x-2"
             >
               <Info className="w-3.5 h-3.5 text-black" />
-              <span>More Information</span>
+              <span>Preguntas Frecuentes</span>
             </button>
 
-            {/* Join Our Discord Button */}
+            {/* Botón Discord */}
             <a
               href={discordUrl}
               target="_blank"
@@ -54,14 +54,14 @@ export function SupportDisclaimer({ settings }: SupportDisclaimerProps) {
               className="w-full py-2.5 px-4 rounded-lg font-bold text-white text-xs bg-[#5865F2] hover:bg-[#4752C4] shadow-sm transition-all flex items-center justify-center space-x-2"
             >
               <MessageSquare className="w-3.5 h-3.5" />
-              <span>Join Our Discord</span>
+              <span>Unirse a Nuestro Discord</span>
             </a>
           </div>
 
           <div className="mt-5 text-center text-xs text-gray-400 flex items-center justify-center space-x-1">
             <Mail className="w-3.5 h-3.5 text-gray-500" />
             <span>
-              Or email us at{" "}
+              O contáctanos en{" "}
               <a
                 href={`mailto:${supportEmail}`}
                 className="text-amber-400 hover:underline font-semibold"
@@ -72,47 +72,43 @@ export function SupportDisclaimer({ settings }: SupportDisclaimerProps) {
           </div>
         </div>
 
-        {/* Disclaimer (7 cols) */}
+        {/* Descargo de Responsabilidad (7 cols) */}
         <div className="lg:col-span-7 bg-[#121522] border border-[#1e2336] hover:border-[#28314a] rounded-xl p-6 shadow-[0_4px_20px_rgba(0,0,0,0.4)] flex flex-col justify-between transition-all duration-300">
           <div className="flex items-center space-x-3 mb-3.5">
             <div className="w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
               <ShieldAlert className="w-4.5 h-4.5" />
             </div>
             <h4 className="text-base font-black text-white tracking-wide">
-              Disclaimer
+              Avisos Importantes de la Tienda
             </h4>
           </div>
 
           <div className="space-y-2.5">
-            {/* Block 1 */}
+            {/* Bloque 1 */}
             <div className="bg-[#0e1019] border-l-2 border-amber-500/70 border-y border-r border-[#1a1f30] rounded-lg p-3 text-xs text-gray-300 leading-relaxed">
               <span>{disclaimer1}</span>
             </div>
 
-            {/* Block 2 */}
+            {/* Bloque 2 */}
             <div className="bg-[#0e1019] border-l-2 border-blue-500/70 border-y border-r border-[#1a1f30] rounded-lg p-3 text-xs text-gray-300 leading-relaxed">
               <span>
-                Please make sure you are well informed of our{" "}
+                Por favor asegúrate de estar bien informado de nuestras{" "}
                 <Link href="/rules" className="text-white font-bold hover:underline">
-                  rules
+                  reglas del servidor
                 </Link>
                 ,{" "}
                 <Link href="/terms" className="text-white font-bold hover:underline">
-                  terms of service
+                  términos de servicio
                 </Link>
-                , and{" "}
+                , y{" "}
                 <Link href="/privacy" className="text-white font-bold hover:underline">
-                  privacy policy
+                  política de privacidad
                 </Link>{" "}
-                before making any purchase on our web store. All players are judged against the{" "}
-                <Link href="/rules" className="text-white font-bold hover:underline">
-                  rules
-                </Link>{" "}
-                equally no matter their store purchases.
+                antes de realizar cualquier compra.
               </span>
             </div>
 
-            {/* Block 3 */}
+            {/* Bloque 3 */}
             <div className="bg-[#0e1019] border-l-2 border-red-500/70 border-y border-r border-[#1a1f30] rounded-lg p-3 text-xs text-gray-300 leading-relaxed">
               <span>{disclaimer3}</span>
             </div>
@@ -120,7 +116,7 @@ export function SupportDisclaimer({ settings }: SupportDisclaimerProps) {
         </div>
       </div>
 
-      {/* More Information Modal */}
+      {/* Modal de Preguntas Frecuentes */}
       {infoModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-modal">
           <div className="bg-[#121522] border border-[#242b40] rounded-xl max-w-lg w-full p-6 relative shadow-2xl">
@@ -136,35 +132,35 @@ export function SupportDisclaimer({ settings }: SupportDisclaimerProps) {
                 <HelpCircle className="w-5 h-5" />
               </div>
               <h3 className="text-lg font-black text-white">
-                Frequently Asked Questions
+                Preguntas Frecuentes
               </h3>
             </div>
 
             <div className="space-y-3 text-xs text-gray-300 max-h-[60vh] overflow-y-auto pr-2">
               <div className="bg-[#0e1019] p-3.5 rounded-lg border border-[#1a1f30]">
                 <h5 className="font-bold text-white mb-1">
-                  How long does delivery take?
+                  ¿Cuánto tarda en entregarse mi paquete?
                 </h5>
                 <p className="text-gray-400 leading-relaxed">
-                  Delivery is instant (1-3 minutes). Make sure you are connected to <code className="text-amber-300 font-mono">play.solarmc.net</code> with your Minecraft player profile.
+                  La entrega es prácticamente instantánea (1-3 minutos). Asegúrate de haber ingresado tu usuario correcto y estar conectado a <code className="text-amber-300 font-mono">play.solarmc.net</code>.
                 </p>
               </div>
 
               <div className="bg-[#0e1019] p-3.5 rounded-lg border border-[#1a1f30]">
                 <h5 className="font-bold text-white mb-1">
-                  What payment methods are accepted?
+                  ¿Qué métodos de pago se aceptan?
                 </h5>
                 <p className="text-gray-400 leading-relaxed">
-                  We accept Credit/Debit cards, PayPal, Apple Pay, Google Pay, and international local payment options via our secure checkout.
+                  Aceptamos Tarjetas de Débito/Crédito, PayPal, Apple Pay, Google Pay y opciones locales internacionales a través de nuestro pasarela segura Tebex.
                 </p>
               </div>
 
               <div className="bg-[#0e1019] p-3.5 rounded-lg border border-[#1a1f30]">
                 <h5 className="font-bold text-white mb-1">
-                  Need custom assistance or support?
+                  ¿Necesitas asistencia personalizada?
                 </h5>
                 <p className="text-gray-400 leading-relaxed">
-                  Join our official Discord server or contact us at <span className="text-amber-300 font-semibold">{supportEmail}</span>.
+                  Únete a nuestro servidor de Discord o contáctanos al correo <span className="text-amber-300 font-semibold">{supportEmail}</span>.
                 </p>
               </div>
             </div>
@@ -173,7 +169,7 @@ export function SupportDisclaimer({ settings }: SupportDisclaimerProps) {
               onClick={() => setInfoModalOpen(false)}
               className="mt-5 w-full py-2.5 rounded-lg font-bold text-xs text-white bg-[#1a1f30] hover:bg-[#22283e] transition-colors"
             >
-              Close FAQ
+              Cerrar Preguntas
             </button>
           </div>
         </div>

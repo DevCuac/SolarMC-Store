@@ -4,67 +4,91 @@ const bcrypt = require('bcryptjs');
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Starting SolarMC database seeding...');
+  console.log('🌱 Starting SolarMC database seeding with generic mock data...');
 
-  // 1. Create Admins & Users
+  // Clean up any previous personal test accounts if they exist
+  try {
+    await prisma.user.deleteMany({
+      where: {
+        email: {
+          in: ['angelriveradeveloper@gmail.com', 'angel@example.com']
+        }
+      }
+    });
+  } catch (e) {}
+
+  // 1. Create Admins, Partners & Users
   const adminPassword = await bcrypt.hash('admin123', 10);
+  const partnerPassword = await bcrypt.hash('partner123', 10);
   const userPassword = await bcrypt.hash('player123', 10);
 
-  // Seed User Admin: angelriveradeveloper@gmail.com
+  // Admin Account: admin@solarmc.net / admin123
   const primaryAdmin = await prisma.user.upsert({
-    where: { email: 'angelriveradeveloper@gmail.com' },
-    update: {
-      role: 'ADMIN',
-    },
-    create: {
-      name: 'Angel Rivera',
-      email: 'angelriveradeveloper@gmail.com',
-      password: adminPassword,
-      role: 'ADMIN',
-      minecraftUsername: 'cuac_xdpe',
-      minecraftEdition: 'Java',
-    },
-  });
-
-  const secondaryAdmin = await prisma.user.upsert({
     where: { email: 'admin@solarmc.net' },
     update: {
       role: 'ADMIN',
+      name: 'Administrador SolarMC',
+      minecraftUsername: 'AdminSolar',
+      minecraftEdition: 'Java',
     },
     create: {
-      name: 'SolarMC Admin',
+      name: 'Administrador SolarMC',
       email: 'admin@solarmc.net',
       password: adminPassword,
       role: 'ADMIN',
-      minecraftUsername: 'cuac_xdpe',
+      minecraftUsername: 'AdminSolar',
       minecraftEdition: 'Java',
     },
   });
 
+  // Partner / Creator Account: partner@solarmc.net / partner123 (Code: SOLAR)
+  const demoPartner = await prisma.user.upsert({
+    where: { email: 'partner@solarmc.net' },
+    update: {
+      role: 'PARTNER',
+      creatorCode: 'SOLAR',
+      creatorCommissionRate: 10,
+    },
+    create: {
+      name: 'Solar Creator Partner',
+      email: 'partner@solarmc.net',
+      password: partnerPassword,
+      role: 'PARTNER',
+      minecraftUsername: 'PartnerSolar',
+      minecraftEdition: 'Java',
+      creatorCode: 'SOLAR',
+      creatorCommissionRate: 10,
+    },
+  });
+
+  // Regular Player Account: jugador@solarmc.net / player123
   const demoPlayer = await prisma.user.upsert({
-    where: { email: 'player@solarmc.net' },
+    where: { email: 'jugador@solarmc.net' },
     update: {},
     create: {
-      name: 'Minecraft Player',
-      email: 'player@solarmc.net',
+      name: 'Jugador SolarMC',
+      email: 'jugador@solarmc.net',
       password: userPassword,
       role: 'USER',
-      minecraftUsername: 'cuac_xdpe',
+      minecraftUsername: 'Steve',
       minecraftEdition: 'Java',
     },
   });
 
-  console.log('✅ Admin user created: angelriveradeveloper@gmail.com (ADMIN)');
+  console.log('✅ Generic Mock Accounts Created:');
+  console.log('   - Admin:   admin@solarmc.net   / admin123   (Role: ADMIN)');
+  console.log('   - Partner: partner@solarmc.net / partner123 (Role: PARTNER, Code: SOLAR)');
+  console.log('   - Jugador: jugador@solarmc.net / player123  (Role: USER)');
 
-  // 2. Create Categories (Using clean icon keys, NO EMOJIS)
+  // 2. Create Categories in Spanish
   const categoriesData = [
-    { name: 'Home', slug: 'home', icon: 'home', description: 'Featured bestsellers and popular server packages', sortOrder: 0 },
-    { name: 'Prison', slug: 'prison', icon: 'prison', description: 'Ranks, pickaxes, multipliers and cell upgrades for OP Prison', sortOrder: 1 },
-    { name: 'Universes', slug: 'universes', icon: 'universes', description: 'Cosmic passes, galaxy shards and solar dimension keys', sortOrder: 2 },
-    { name: 'Dungeons', slug: 'dungeons', icon: 'dungeons', description: 'Boss keys, legendary armor sets and raid boosters', sortOrder: 3 },
-    { name: 'Gens', slug: 'gens', icon: 'gens', description: 'Automated generators, sell wands and tycoon multipliers', sortOrder: 4 },
-    { name: 'Survival', slug: 'survival', icon: 'survival', description: 'Survival ranks, claim blocks, pet eggs and fly perks', sortOrder: 5 },
-    { name: 'Global', slug: 'global', icon: 'global', description: 'Global credits, solar cosmetics, chat tags and bundles', sortOrder: 6 },
+    { name: 'Inicio', slug: 'home', icon: 'home', description: 'Los paquetes más populares y vendidos de la red SolarMC', sortOrder: 0 },
+    { name: 'Prison', slug: 'prison', icon: 'prison', description: 'Rangos, picos, multiplicadores y mejoras para OP Prison', sortOrder: 1 },
+    { name: 'Universes', slug: 'universes', icon: 'universes', description: 'Pases cósmicos, fragmentos solares y llaves de dimensiones', sortOrder: 2 },
+    { name: 'Dungeons', slug: 'dungeons', icon: 'dungeons', description: 'Llaves de bosses, armaduras legendarias y potenciadores de raids', sortOrder: 3 },
+    { name: 'Gens', slug: 'gens', icon: 'gens', description: 'Generadores automáticos, varitas de venta y multiplicadores tycoon', sortOrder: 4 },
+    { name: 'Survival', slug: 'survival', icon: 'survival', description: 'Rangos survival, bloques de protección, mascotas y /fly', sortOrder: 5 },
+    { name: 'Global', slug: 'global', icon: 'global', description: 'Créditos globales, cosméticos solares, etiquetas de chat y paquetes', sortOrder: 6 },
   ];
 
   const categories = {};
@@ -76,46 +100,46 @@ async function main() {
     });
     categories[cat.slug] = created.id;
   }
-  console.log('✅ Categories seeded with clean icon keys');
+  console.log('✅ Categories seeded in Spanish');
 
-  // 3. Create Products
+  // 3. Create Products in Spanish
   const productsData = [
     {
-      name: '4500 Solar Credits',
+      name: '4,500 Créditos Solar',
       slug: '4500-solar-credits',
-      description: 'Our most popular credits bundle. Enhance your experience across all gamemodes.',
+      description: 'Nuestro paquete de créditos más vendido. Mejora tu experiencia en todas las modalidades.',
       price: 49.99,
       originalPrice: 59.99,
-      badge: 'BEST SELLER',
+      badge: 'MÁS VENDIDO',
       icon: 'coins',
       categoryId: categories['home'],
       perks: JSON.stringify([
-        '4,500 Solar Store Credits delivered instantly',
-        'Usable across Prison, Universes, Gens, Survival & Dungeons',
-        'Unlocks +500 Bonus Solar Flare Loyalty Tokens in-game',
-        'Exclusive Solar Chat Prefix [4.5k Supporter]'
+        '4,500 Créditos de la Tienda SolarMC entregados al instante',
+        'Útiles en Prison, Universes, Gens, Survival y Dungeons',
+        'Desbloquea +500 Fichas de Lealtad Solar Flare de bonificación',
+        'Prefijo exclusivo en el chat de SolarMC [4.5k Partidario]'
       ]),
       commands: JSON.stringify([
         'credits add {player} 4500',
-        'bc &6&lSOLAR STORE &8» &e{player} &7has purchased the &64500 Solar Credits &7bundle! &a/store'
+        'bc &6&lTIENDA SOLAR &8» &e{player} &7ha adquirido el paquete de &64500 Créditos Solar&7! &a/store'
       ]),
       sortOrder: 0,
     },
     {
-      name: 'SolarMC Plus Pass',
+      name: 'Pase SolarMC Plus',
       slug: 'solarmc-plus-pass',
-      description: 'Get bonus Credits, loot boxes, crates, skin cases, and exclusive perks every month.',
+      description: 'Recibe Créditos mensuales, cajas de botín, llaves, skins y beneficios exclusivos cada mes.',
       price: 24.99,
       originalPrice: null,
-      badge: 'MONTHLY',
+      badge: 'MENSUAL',
       icon: 'sparkles',
       categoryId: categories['home'],
       perks: JSON.stringify([
-        '2,000 Monthly Solar Credits',
-        '3x Monthly Legendary Solar Eclipse Loot Boxes',
-        '5x Exclusive Custom Skin Cases',
-        'Access to /fly in all Hub and Peaceful zones',
-        '+25% In-Game Currency Booster on all realms'
+        '2,000 Créditos Solar cada mes',
+        '3x Cajas Legendarias Mensuales Solar Eclipse',
+        '5x Cajas Exclusivas de Skins Personalizadas',
+        'Acceso al comando /fly en todas las zonas del Hub y áreas pacíficas',
+        '+25% Multiplicador de economía en todas las modalidades'
       ]),
       commands: JSON.stringify([
         'lp user {player} parent addplus',
@@ -125,41 +149,41 @@ async function main() {
       sortOrder: 1,
     },
     {
-      name: 'Solar Overlord Rank',
+      name: 'Rango Solar Overlord',
       slug: 'solar-overlord-rank',
-      description: 'The definitive Prison powerhouse rank. Dominate mines and unlock elite private vaults.',
+      description: 'El rango supremo para Prison. Domina las minas y desbloquea baúles privados de élite.',
       price: 79.99,
       originalPrice: 99.99,
       badge: 'POPULAR',
       icon: 'crown',
       categoryId: categories['prison'],
       perks: JSON.stringify([
-        'Access to /kit overlord (P50 Armor, Efficiency 200 Pickaxe)',
-        '10x Private Player Vaults (/pv 1-10)',
-        '3.5x Mine Booster Multiplier',
-        'Custom Overlord Rank prefix & glowing solar tag',
-        'Keep inventory upon death in PvP mines'
+        'Acceso a /kit overlord (Armadura P50, Pico Eficiencia 200)',
+        '10x Baúles Privados de Jugador (/pv 1-10)',
+        'Multiplicador de Minería 3.5x',
+        'Prefijo personalizado Overlord y tag brillante en el chat',
+        'Mantén tu inventario al morir en minas PvP'
       ]),
       commands: JSON.stringify([
         'lp user {player} parent add overlord',
-        'broadcast &6&lRANK &8» &f{player} &7is now an &6&lOVERLORD&7!'
+        'broadcast &6&lRANGO &8» &f{player} &7ahora es &6&lOVERLORD&7!'
       ]),
       sortOrder: 0,
     },
     {
-      name: 'Titan Rank',
+      name: 'Rango Titán',
       slug: 'titan-rank',
-      description: 'Superior prison status with auto-sell privileges and expanded backpack storage.',
+      description: 'Estatus superior con privilegios de auto-venta y mochila expandida.',
       price: 44.99,
       originalPrice: 59.99,
-      badge: 'SALE -20%',
+      badge: 'OFERTA -20%',
       icon: 'shield',
       categoryId: categories['prison'],
       perks: JSON.stringify([
-        'Access to /kit titan (P35 Armor & Speed Buff)',
-        '6x Private Player Vaults',
-        '2.5x Multiplier for all block sales',
-        'Auto-sell wand with unlimited charges'
+        'Acceso a /kit titan (Armadura P35 y velocidad)',
+        '6x Baúles Privados de Jugador',
+        'Multiplicador 2.5x en venta de bloques',
+        'Varita de auto-venta con cargas ilimitadas'
       ]),
       commands: JSON.stringify([
         'lp user {player} parent add titan'
@@ -167,20 +191,20 @@ async function main() {
       sortOrder: 1,
     },
     {
-      name: 'Solar God Rank',
+      name: 'Rango Solar God',
       slug: 'solar-god-rank',
-      description: 'Harness the cosmic energy of the solar eclipse across infinite dimensions with god-tier abilities.',
+      description: 'Aprovecha la energía cósmica a través de dimensiones infinitas con habilidades divinas.',
       price: 119.99,
       originalPrice: 149.99,
-      badge: 'ULTIMATE',
+      badge: 'SUPREMO',
       icon: 'flame',
       categoryId: categories['universes'],
       perks: JSON.stringify([
-        'Solar God Kit with custom radiant enchantments',
-        'Instant dimension warp without cooldown',
-        'Immunity to radiation & void damage',
-        '15x Solar Shard Generation Speed',
-        'Custom Solar Flare particle effects'
+        'Kit Solar God con encantamientos radiantes exclusivos',
+        'Warp dimensional instantáneo sin tiempo de espera',
+        'Inmunidad a la radiación y daño del vacío',
+        '15x Velocidad de generación de fragmentos solares',
+        'Efectos de partículas Solar Flare personalizados'
       ]),
       commands: JSON.stringify([
         'lp user {player} parent add solargod',
@@ -189,19 +213,19 @@ async function main() {
       sortOrder: 0,
     },
     {
-      name: 'Dungeon Master Pass',
+      name: 'Pase Maestro de Mazmorras',
       slug: 'dungeon-master-pass',
-      description: 'Unlimited raid entries, double boss drops and exclusive mythical relics.',
+      description: 'Entradas ilimitadas a raids, doble drop de jefes y reliquias míticas exclusivas.',
       price: 19.99,
       originalPrice: 29.99,
-      badge: 'SEASON PASS',
+      badge: 'PASE DE TEMPORADA',
       icon: 'swords',
       categoryId: categories['dungeons'],
       perks: JSON.stringify([
-        'Unlimited daily Dungeon entries without keys',
-        '2x Mythic Loot drop chance from Raid Bosses',
-        'Exclusive [Dungeon Master] title',
-        'Instant revive token per match'
+        'Entradas diarias ilimitadas a Mazmorras sin gastar llaves',
+        '2x Probabilidad de botín mítico al derrotar jefes de Raid',
+        'Título exclusivo [Maestro de Mazmorras]',
+        'Ficha de revivir instantáneo por partida'
       ]),
       commands: JSON.stringify([
         'dungeons pass grant {player} master'
@@ -209,19 +233,19 @@ async function main() {
       sortOrder: 0,
     },
     {
-      name: 'Auto-Miner Gen Pack',
+      name: 'Paquete Generadores Auto-Miner',
       slug: 'auto-miner-gen-pack',
-      description: '10x Automated Netherite & Emerald Generators that work while you sleep.',
+      description: '10x Generadores automáticos de Netherite y Esmeralda que trabajan mientras duermes.',
       price: 29.99,
       originalPrice: 39.99,
       badge: 'OP BOOST',
       icon: 'package',
       categoryId: categories['gens'],
       perks: JSON.stringify([
-        '5x Tier V Netherite Automated Gens',
-        '5x Tier V Emerald Automated Gens',
-        '1x Unlimited Vacuum Hopper',
-        '2x Generator Speed Booster (Permanent)'
+        '5x Generadores Automáticos de Netherite Nivel V',
+        '5x Generadores Automáticos de Esmeralda Nivel V',
+        '1x Tolva de Vacío Ilimitada',
+        '2x Potenciador de velocidad de generadores (Permanente)'
       ]),
       commands: JSON.stringify([
         'gens give {player} netherite_5 5',
@@ -230,19 +254,19 @@ async function main() {
       sortOrder: 0,
     },
     {
-      name: 'VIP Survival Rank',
+      name: 'Rango VIP Survival',
       slug: 'vip-survival-rank',
-      description: 'Essential perks for peaceful builders, land claims and flight access.',
+      description: 'Ventajas esenciales para constructores pacíficos, reclamos de terreno y acceso a vuelo.',
       price: 9.99,
       originalPrice: 14.99,
-      badge: 'BEST VALUE',
+      badge: 'MEJOR VALOR',
       icon: 'star',
       categoryId: categories['survival'],
       perks: JSON.stringify([
-        '/fly command enabled in all survival zones',
-        '+5,000 Bonus Claim Blocks',
-        '4x /sethome locations',
-        'Access to /hat and /workbench'
+        'Comando /fly habilitado en todas las zonas de supervivencia',
+        '+5,000 Bloques de Reclamo adicionales',
+        '4x Puntos de /sethome',
+        'Acceso a /hat y /workbench'
       ]),
       commands: JSON.stringify([
         'lp user {player} parent add vip'
@@ -250,19 +274,19 @@ async function main() {
       sortOrder: 0,
     },
     {
-      name: '10,000 Solar Credits Bundle',
+      name: 'Mega Bóveda 10,000 Créditos Solar',
       slug: '10000-solar-credits-bundle',
-      description: 'The mega credits vault for serious server commanders.',
+      description: 'La bóveda de créditos definitiva para los comandantes más dedicados del servidor.',
       price: 99.99,
       originalPrice: 129.99,
-      badge: 'MEGA DEAL',
+      badge: 'MEGA OFERTA',
       icon: 'coins',
       categoryId: categories['global'],
       perks: JSON.stringify([
-        '10,000 Global Credits across all realms',
-        'Free Mythic Solar Pet of your choice',
-        'Animated [SOLAR LEGEND] chat badge',
-        'Access to VIP Discord lounge'
+        '10,000 Créditos Globales utilizables en todas las modalidades',
+        'Mascota Solar Mítica gratuita a tu elección',
+        'Insignia animada en el chat [LEYENDA SOLAR]',
+        'Acceso exclusivo a la sala VIP de Discord'
       ]),
       commands: JSON.stringify([
         'credits add {player} 10000'
@@ -278,7 +302,7 @@ async function main() {
       create: prod,
     });
   }
-  console.log('✅ Products seeded successfully');
+  console.log('✅ Products seeded successfully in Spanish');
 
   // 4. Create Coupons
   const couponsData = [
@@ -320,7 +344,22 @@ async function main() {
   }
   console.log('✅ Coupons seeded successfully');
 
-  // 5. Store Settings for SolarMC
+  // 5. Store Settings with generic contact info
+  const defaultNavLinks = JSON.stringify([
+    { id: "1", label: "Inicio", url: "/", icon: "Home", isExternal: false },
+    { id: "2", label: "Votos", url: "https://solarmc.net/vote", icon: "Vote", isExternal: true },
+    { id: "3", label: "Wiki & Guías", url: "https://wiki.solarmc.net", icon: "BookOpen", isExternal: true },
+    { id: "4", label: "Reglas", url: "/rules", icon: "Scale", isExternal: false },
+    { id: "5", label: "Discord", url: "https://discord.gg/solarmc", icon: "MessageSquare", isExternal: true },
+  ]);
+
+  const defaultAnnouncements = JSON.stringify([
+    "🔥 GRAN OFERTA SOLAR: ¡Usa el código WELCOME10 para un 10% de descuento en tu compra!",
+    "⚡ ¡Reclama tu Rango Inicial GRATIS con baúles de jugador y kits de bienvenida!",
+    "⭐ Apoya a tus creadores favoritos usando su Código de Partner al pagar en el carrito.",
+    "🛡️ Entrega 100% inmediata y automatizada en el servidor al completar tu orden."
+  ]);
+
   const settingsData = [
     { key: 'server_name', value: 'SolarMC' },
     { key: 'server_ip', value: 'play.solarmc.net' },
@@ -328,16 +367,18 @@ async function main() {
     { key: 'discord_url', value: 'https://discord.gg/solarmc' },
     { key: 'discord_online_count', value: '2611' },
     { key: 'server_online_count', value: '861' },
-    { key: 'announcement_banner', value: '🔥 SOLAR SALE: Use code WELCOME10 for 10% OFF! Claim your Free Starter Rank today!' },
-    { key: 'support_email', value: 'angelriveradeveloper@gmail.com' },
+    { key: 'announcement_banner', value: '🔥 OFERTA SOLAR: ¡Usa el código WELCOME10 para 10% de descuento! ¡Reclama tu Rango Inicial Gratis hoy!' },
+    { key: 'announcements', value: defaultAnnouncements },
+    { key: 'nav_links', value: defaultNavLinks },
+    { key: 'support_email', value: 'soporte@solarmc.net' },
     { key: 'currency_symbol', value: '$' },
     { key: 'company_name', value: 'SolarMC Network' },
     { key: 'company_associated', value: 'SolarMC Services LLC' },
-    { key: 'hero_title', value: 'Claim Your Free Rank' },
-    { key: 'hero_subtitle', value: 'Unlock awesome perks instantly when you claim your rank' },
-    { key: 'disclaimer_text_1', value: 'Credits are only usable under the terms of the SolarMC Credits Disclaimers. Credits are a virtual intangible currency which cannot be transferred outside of the SolarMC Network. Credits do not represent a property interest of any kind and cannot be cashed out or used outside of SolarMC services.' },
-    { key: 'disclaimer_text_2', value: 'Please make sure you are well informed of our rules, terms of service, and privacy policy before making any purchase on our web store. All players are judged against the rules equally no matter their store purchases.' },
-    { key: 'disclaimer_text_3', value: 'Purchases cannot be refunded under any circumstance. Opening a chargeback or dispute will result in an automatic and permanent ban from our Minecraft Network, our Tebex Store and other Tebex Stores.' },
+    { key: 'hero_title', value: 'Reclama Tu Rango Gratis' },
+    { key: 'hero_subtitle', value: 'Desbloquea ventajas increíbles en el juego al instante al reclamar tu rango' },
+    { key: 'disclaimer_text_1', value: 'Los créditos solo son utilizables bajo los términos de descargo de responsabilidad de SolarMC. Los créditos son una moneda virtual intangible que no se puede transferir fuera de la red SolarMC.' },
+    { key: 'disclaimer_text_2', value: 'Por favor asegúrate de estar bien informado de nuestras reglas, términos de servicio y política de privacidad antes de realizar cualquier compra en nuestra tienda. Todos los jugadores son juzgados por igual ante las reglas sin importar sus compras en la tienda.' },
+    { key: 'disclaimer_text_3', value: 'Las compras no se pueden reembolsar bajo ninguna circunstancia. Abrir un contracargo o disputa resultará en un baneo automático y permanente de nuestra red de Minecraft, nuestra tienda Tebex y otras tiendas Tebex.' },
   ];
 
   for (const set of settingsData) {
@@ -347,122 +388,122 @@ async function main() {
       create: set,
     });
   }
-  console.log('✅ Store Settings seeded for SolarMC');
+  console.log('✅ Store Settings seeded for SolarMC with generic support email');
 
-  // 6. CMS Pages
+  // 6. CMS Pages in Spanish
   const pagesData = [
     {
       slug: 'terms',
-      title: 'Terms & Conditions',
-      content: `# Terms of Service & Conditions of Sale
+      title: 'Términos & Condiciones de Venta',
+      content: `# Términos de Servicio & Condiciones de Venta
 
-**Last Updated: August 2026**
+**Última Actualización: Agosto 2026**
 
-Welcome to **SolarMC** Webstore. By using our store or purchasing any digital goods, virtual currency, ranks, or items, you explicitly agree to comply with and be bound by the following terms and conditions.
-
----
-
-### 1. Nature of Virtual Products
-- All products sold on this store are **intangible, virtual goods** meant exclusively for use within the SolarMC Minecraft Server network.
-- Purchases grant a non-exclusive, revocable, and non-transferable license to use specific in-game features, ranks, cosmetics, or virtual items.
-- Virtual credits ("Solar Credits") do not have monetary value outside the network and cannot be redeemed for fiat currency, cryptocurrencies, or real-world goods.
+Bienvenido a la Tienda Oficial de **SolarMC**. Al usar nuestra tienda o adquirir cualquier bien digital, moneda virtual, rango o paquete, aceptas expresamente cumplir y regirte por los siguientes términos y condiciones.
 
 ---
 
-### 2. Refund & Dispute Policy
+### 1. Naturaleza de los Productos Virtuales
+- Todos los productos vendidos en esta tienda son **bienes intangibles y virtuales**, destinados exclusivamente para su uso dentro de la red del servidor de Minecraft SolarMC.
+- Las compras otorgan una licencia no exclusiva, revocable e intransferible para utilizar funciones específicas dentro del juego, rangos, cosméticos o artículos virtuales.
+- Los créditos virtuales ("Créditos Solar") no tienen valor monetario fuera de la red y no se pueden canjear por dinero fiduciario, criptomonedas ni bienes del mundo real.
+
+---
+
+### 2. Política de Reembolsos y Disputas
 > [!IMPORTANT]
-> **All sales are strictly final.** Due to the immediate delivery and consumption of digital goods upon payment, we do NOT offer refunds or exchanges.
+> **Todas las ventas son estrictamente finales.** Debido a la entrega y consumo inmediato de los bienes digitales tras el pago, NO ofrecemos reembolsos ni cambios.
 
-- Initiating a chargeback, payment dispute, or payment reversal via your bank, credit card issuer, PayPal, or payment processor will result in an **immediate and permanent ban** of your Minecraft account, associated IP addresses, and blacklisting across the entire Tebex merchant network.
-- If you experience technical delivery issues, please contact our support team at **angelriveradeveloper@gmail.com** or via our official Discord before taking any external action.
-
----
-
-### 3. Server Rules & Player Conduct
-- Having a paid rank or item does **not** make you exempt from server rules.
-- If you are banned or muted for violating community guidelines (e.g. cheating, exploiting bugs, harassment, hate speech, or advertising), you will not receive a refund or transfer of your purchases to another account.
+- Iniciar un contracargo, disputa de pago o reversión a través de tu banco, emisor de tarjeta, PayPal o procesador de pagos resultará en el **baneo inmediato y permanente** de tu cuenta de Minecraft, direcciones IP asociadas y bloqueo en toda la red de comercios Tebex.
+- Si experimentas algún problema técnico con la entrega, contáctanos en **soporte@solarmc.net** o mediante nuestro Discord oficial antes de tomar medidas externas.
 
 ---
 
-### 4. Age of Consent
-- You must be at least 18 years old, or have express permission from a parent or legal guardian, to make a purchase on this store. Unauthorized transactions made by minors will not be refunded.
+### 3. Reglas del Servidor y Conducta del Jugador
+- Poseer un rango o artículo de pago **no** te exime de las reglas del servidor.
+- Si eres sancionado o silenciado por infringir las normas comunitarias (como trampas, uso de bugs, acoso o toxicidad), no recibirás ningún reembolso ni transferencia de tus compras a otra cuenta.
 
 ---
 
-### 5. Disclaimer & Affiliation
-- SolarMC is not affiliated with, endorsed by, or associated with Mojang Studios or Microsoft. Minecraft is a registered trademark of Mojang Studios.
+### 4. Edad de Consentimiento
+- Debes tener al menos 18 años, o contar con el permiso explícito de tus padres o tutor legal, para realizar compras en esta tienda. Las transacciones no autorizadas realizadas por menores de edad no serán reembolsadas.
+
+---
+
+### 5. Descargo de Responsabilidad y Afiliación
+- SolarMC no está afiliado, respaldado ni asociado con Mojang Studios ni Microsoft. Minecraft es una marca registrada de Mojang Studios.
 `,
     },
     {
       slug: 'privacy',
-      title: 'Privacy Policy',
-      content: `# Privacy Policy
+      title: 'Política de Privacidad',
+      content: `# Política de Privacidad
 
-**Effective Date: August 2026**
+**Fecha de Entrada en Vigor: Agosto 2026**
 
-At **SolarMC**, we value your privacy and are committed to protecting your personal information. This Privacy Policy explains how we collect, store, use, and safeguard your data when you visit or interact with our webstore.
-
----
-
-### 1. Information We Collect
-When you use our store or authenticate with our services, we may collect:
-- **Minecraft Identity**: Your Minecraft username, in-game UUID, and edition (Java or Bedrock).
-- **Authentication Data**: When logging in via Discord or Google OAuth, we receive your public avatar, display name, and verified email address.
-- **Transaction Details**: IP address, billing country/postal code, purchased items, timestamp, and order totals. *Note: We never store your raw credit card numbers or banking passwords.*
-- **Technical Logs**: Browser type, operating system, device headers, and cookie identifiers.
+En **SolarMC**, valoramos tu privacidad y estamos comprometidos a proteger tu información personal. Esta política explica cómo recopilamos, almacenamos, usamos y protegemos tus datos al interactuar con nuestra tienda web.
 
 ---
 
-### 2. How We Use Your Data
-- To automatically deliver your purchased ranks, items, and credits to your in-game player profile.
-- To detect and prevent fraudulent transactions, chargebacks, and abusive behavior.
-- To provide customer support and notify you of order statuses.
-- To maintain server analytics and improve user store experience.
+### 1. Información que Recopilamos
+Al utilizar nuestra tienda o autenticarte con nuestros servicios, podemos recopilar:
+- **Identidad en Minecraft**: Tu nombre de usuario (IGN), UUID en el juego y edición (Java o Bedrock).
+- **Datos de Autenticación**: Al iniciar sesión mediante Discord o Google OAuth, recibimos tu avatar público, nombre de pantalla y correo electrónico verificado.
+- **Detalles de la Transacción**: Dirección IP, país de facturación, artículos comprados, fecha y hora, y montos totales. *Nota: Nunca almacenamos números de tarjetas de crédito sin procesar ni contraseñas bancarias.*
+- **Registros Técnicos**: Tipo de navegador, sistema operativo y cookies de sesión.
 
 ---
 
-### 3. Contact Us
-For any privacy inquiries, email us at **angelriveradeveloper@gmail.com**.
+### 2. Cómo Usamos tus Datos
+- Para entregar automáticamente tus rangos, artículos y créditos comprados a tu cuenta en el juego.
+- Para detectar y prevenir transacciones fraudulentas, contracargos y comportamientos abusivos.
+- Para brindar soporte al cliente y notificarte sobre el estado de tus compras.
+- Para mantener análisis estadísticos del servidor y optimizar la experiencia de compra.
+
+---
+
+### 3. Contacto
+Para cualquier consulta sobre privacidad, escríbenos a **soporte@solarmc.net**.
 `,
     },
     {
       slug: 'impressum',
-      title: 'Impressum / Legal Notice',
-      content: `# Impressum / Legal Notice
+      title: 'Aviso Legal (Impressum)',
+      content: `# Aviso Legal (Impressum)
 
-### Company Information
-**Entity**: SolarMC Services LLC  
-**Associated Network**: SolarMC Minecraft Network  
-**Email**: angelriveradeveloper@gmail.com  
-**Support Desk**: Available 24/7 via [Discord](https://discord.gg/solarmc)  
+### Información de la Empresa
+**Entidad**: SolarMC Services LLC  
+**Red Asociada**: Servidor de Minecraft SolarMC  
+**Correo de Contacto**: soporte@solarmc.net  
+**Soporte Técnico**: Disponible 24/7 a través de [Discord](https://discord.gg/solarmc)  
 
 ---
 
-### Merchant of Record
-This website and its checkout process is operated by our online reseller and Merchant of Record, **Tebex Limited**, which handles billing, taxation, compliance, and payment settlement.
+### Revendedor Autorizado (Merchant of Record)
+Este sitio web y su proceso de pago son operados por nuestro revendedor en línea oficial y Merchant of Record, **Tebex Limited**, quien se encarga de la facturación, impuestos, cumplimiento normativo y procesamiento de pagos.
 `,
     },
     {
       slug: 'rules',
-      title: 'Server Rules & Conduct',
-      content: `# Server Rules & Community Guidelines
+      title: 'Reglas del Servidor & Normas Comunitarias',
+      content: `# Reglas del Servidor & Normas Comunitarias
 
-To ensure a fair, enjoyable, and safe environment for all players across our network, all users must adhere to the following rules:
-
----
-
-### 1. No Cheating or Unfair Advantages
-- Using hacked clients, unauthorized mods, x-ray packs, macro scripts, or auto-clickers is strictly prohibited.
+Para garantizar un entorno justo, divertido y seguro para todos los jugadores en nuestra red, todos los usuarios deben cumplir con las siguientes normas:
 
 ---
 
-### 2. Respectful Communication
-- Toxic behavior, racial slurs, hate speech, severe harassment, or real-life threats will result in an immediate ban.
+### 1. Cero Tolerancia a Trampas y Hacks
+- El uso de clientes hackeados, mods no autorizados, paquetes de x-ray, macros automatizadas o auto-clickers está estrictamente prohibido y conllevará un baneo permanente.
 
 ---
 
-### 3. Bug Abuse & Exploits
-- If you find a dupe or economy glitch, report it immediately to staff.
+### 2. Comunicación Respetuosa
+- Los comportamientos tóxicos, insultos racistas, incitación al odio, acoso grave o amenazas en la vida real resultarán en sanciones inmediatas.
+
+---
+
+### 3. Abuso de Bugs y Exploits
+- Si encuentras un fallo de duplicación o un glitch en la economía, repórtalo de inmediato al equipo de moderación. El abuso de exploits resultará en el reseteo de la cuenta y baneo.
 `,
     },
   ];
@@ -474,9 +515,9 @@ To ensure a fair, enjoyable, and safe environment for all players across our net
       create: page,
     });
   }
-  console.log('✅ CMS Pages seeded successfully for SolarMC');
+  console.log('✅ CMS Pages seeded successfully in Spanish with generic email');
 
-  console.log('🎉 SolarMC Database seeding completed successfully!');
+  console.log('🎉 SolarMC Database seeding completed with generic mock data!');
 }
 
 main()

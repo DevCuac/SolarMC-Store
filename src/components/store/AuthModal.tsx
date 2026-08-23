@@ -18,7 +18,7 @@ import { toast } from "sonner";
 
 export function AuthModal() {
   const { isAuthModalOpen, setIsAuthModalOpen, authModalTab, setAuthModalTab } = useCart();
-  const { setMinecraftUsername, setMinecraftEdition, minecraftEdition } = usePlayer();
+  const { setMinecraftUsername, setMinecraftEdition } = usePlayer();
 
   // Form states
   const [email, setEmail] = useState("");
@@ -33,7 +33,7 @@ export function AuthModal() {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) {
-      toast.error("Please enter both email and password");
+      toast.error("Por favor ingresa tu correo y contraseña");
       return;
     }
 
@@ -46,14 +46,14 @@ export function AuthModal() {
       });
 
       if (res?.error) {
-        toast.error(res.error || "Invalid credentials");
+        toast.error(res.error || "Credenciales incorrectas");
       } else {
-        toast.success("Signed in successfully!");
+        toast.success("¡Sesión iniciada con éxito!");
         setIsAuthModalOpen(false);
         window.location.reload();
       }
     } catch (e) {
-      toast.error("Failed to sign in");
+      toast.error("Error al iniciar sesión");
     } finally {
       setLoading(false);
     }
@@ -62,7 +62,7 @@ export function AuthModal() {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) {
-      toast.error("Email and password are required");
+      toast.error("El correo y la contraseña son obligatorios");
       return;
     }
 
@@ -83,7 +83,7 @@ export function AuthModal() {
       const data = await res.json();
 
       if (res.ok && data.success) {
-        toast.success("Account created successfully! Signing you in...");
+        toast.success("¡Cuenta creada con éxito! Iniciando sesión...");
         if (mcUsername) setMinecraftUsername(mcUsername);
         await signIn("credentials", {
           email,
@@ -93,10 +93,10 @@ export function AuthModal() {
         setIsAuthModalOpen(false);
         window.location.reload();
       } else {
-        toast.error(data.error || "Failed to create account");
+        toast.error(data.error || "No se pudo crear la cuenta");
       }
     } catch (e) {
-      toast.error("Registration failed");
+      toast.error("Error en el registro");
     } finally {
       setLoading(false);
     }
@@ -105,7 +105,7 @@ export function AuthModal() {
   const handleQuickLink = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!mcUsername.trim()) {
-      toast.error("Please enter your Minecraft username");
+      toast.error("Por favor ingresa tu usuario de Minecraft");
       return;
     }
 
@@ -121,10 +121,10 @@ export function AuthModal() {
         redirect: false,
       });
 
-      toast.success(`Player profile connected to ${clean}!`);
+      toast.success(`¡Perfil de jugador conectado a ${clean}!`);
       setIsAuthModalOpen(false);
     } catch (e) {
-      toast.error("Failed to link Minecraft player");
+      toast.error("Error al vincular el jugador");
     } finally {
       setLoading(false);
     }
@@ -141,7 +141,7 @@ export function AuthModal() {
           <X className="w-5 h-5" />
         </button>
 
-        {/* Tab Switcher (Linear) */}
+        {/* Tab Switcher */}
         <div className="flex items-center justify-center space-x-1 bg-[#0e1019] p-1 rounded-lg mb-5 border border-[#1e2336]">
           <button
             onClick={() => setAuthModalTab("signin")}
@@ -151,7 +151,7 @@ export function AuthModal() {
                 : "text-gray-400 hover:text-gray-200"
             }`}
           >
-            Sign In
+            Iniciar Sesión
           </button>
           <button
             onClick={() => setAuthModalTab("signup")}
@@ -161,7 +161,7 @@ export function AuthModal() {
                 : "text-gray-400 hover:text-gray-200"
             }`}
           >
-            Sign Up
+            Registrarse
           </button>
           <button
             onClick={() => setAuthModalTab("quick")}
@@ -171,7 +171,7 @@ export function AuthModal() {
                 : "text-gray-400 hover:text-gray-200"
             }`}
           >
-            Quick MC
+            Rápido MC
           </button>
         </div>
 
@@ -183,7 +183,7 @@ export function AuthModal() {
               className="w-full py-2 px-3 bg-[#5865F2] hover:bg-[#4752C4] text-white rounded-lg text-xs font-bold flex items-center justify-center space-x-2 shadow-sm transition-all"
             >
               <MessageSquare className="w-3.5 h-3.5" />
-              <span>Continue with Discord</span>
+              <span>Continuar con Discord</span>
             </button>
 
             <button
@@ -208,7 +208,7 @@ export function AuthModal() {
                   d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
                 />
               </svg>
-              <span>Continue with Google</span>
+              <span>Continuar con Google</span>
             </button>
 
             <div className="relative my-3 text-center">
@@ -216,18 +216,18 @@ export function AuthModal() {
                 <div className="w-full border-t border-[#1e2336]"></div>
               </div>
               <span className="relative bg-[#121522] px-2 text-[10px] font-bold text-gray-500 uppercase tracking-wider">
-                Or with Email
+                O con Correo Electrónico
               </span>
             </div>
           </div>
         )}
 
-        {/* Tab Content: Sign In */}
+        {/* Tab Content: Iniciar Sesión */}
         {authModalTab === "signin" && (
           <form onSubmit={handleSignIn} className="space-y-3">
             <div>
               <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">
-                Email Address
+                Correo Electrónico
               </label>
               <div className="relative">
                 <Mail className="w-3.5 h-3.5 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -235,7 +235,7 @@ export function AuthModal() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="angelriveradeveloper@gmail.com"
+                  placeholder="tu_correo@ejemplo.com"
                   className="w-full bg-[#0e1019] border border-[#1e2336] focus:border-[#ff9d00] rounded-lg pl-9 pr-3 py-2 text-xs text-white placeholder-gray-500 outline-none transition-colors"
                   required
                 />
@@ -244,7 +244,7 @@ export function AuthModal() {
 
             <div>
               <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">
-                Password
+                Contraseña
               </label>
               <div className="relative">
                 <Lock className="w-3.5 h-3.5 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -264,36 +264,36 @@ export function AuthModal() {
               disabled={loading}
               className="w-full py-2.5 rounded-lg font-black text-black text-xs sm:text-sm bg-[#ff9d00] hover:bg-[#ffad26] shadow-[0_0_15px_rgba(255,157,0,0.3)] disabled:opacity-50 transition-all flex items-center justify-center space-x-2 mt-4"
             >
-              {loading ? <Loader2 className="w-4 h-4 animate-spin text-black" /> : <span>Sign In</span>}
+              {loading ? <Loader2 className="w-4 h-4 animate-spin text-black" /> : <span>Ingresar</span>}
             </button>
           </form>
         )}
 
-        {/* Tab Content: Sign Up */}
+        {/* Tab Content: Registrarse */}
         {authModalTab === "signup" && (
           <form onSubmit={handleSignUp} className="space-y-2.5">
             <div>
               <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-0.5">
-                Display Name
+                Nombre de Pantalla
               </label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Alex"
+                placeholder="Tu Nombre"
                 className="w-full bg-[#0e1019] border border-[#1e2336] focus:border-[#ff9d00] rounded-lg px-3 py-1.5 text-xs text-white placeholder-gray-500 outline-none transition-colors"
               />
             </div>
 
             <div>
               <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-0.5">
-                Email Address
+                Correo Electrónico
               </label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="player@solarmc.net"
+                placeholder="jugador@solarmc.net"
                 className="w-full bg-[#0e1019] border border-[#1e2336] focus:border-[#ff9d00] rounded-lg px-3 py-1.5 text-xs text-white placeholder-gray-500 outline-none transition-colors"
                 required
               />
@@ -301,7 +301,7 @@ export function AuthModal() {
 
             <div>
               <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-0.5">
-                Password
+                Contraseña
               </label>
               <input
                 type="password"
@@ -315,13 +315,13 @@ export function AuthModal() {
 
             <div>
               <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-0.5">
-                Minecraft Username
+                Usuario de Minecraft (IGN)
               </label>
               <input
                 type="text"
                 value={mcUsername}
                 onChange={(e) => setMcUsername(e.target.value)}
-                placeholder="e.g. cuac_xdpe"
+                placeholder="ej. cuac_xdpe"
                 className="w-full bg-[#0e1019] border border-[#1e2336] focus:border-[#ff9d00] rounded-lg px-3 py-1.5 text-xs text-white placeholder-gray-500 outline-none transition-colors"
               />
             </div>
@@ -331,12 +331,12 @@ export function AuthModal() {
               disabled={loading}
               className="w-full py-2.5 rounded-lg font-black text-black text-xs sm:text-sm bg-[#ff9d00] hover:bg-[#ffad26] shadow-[0_0_15px_rgba(255,157,0,0.3)] disabled:opacity-50 transition-all flex items-center justify-center space-x-2 mt-3"
             >
-              {loading ? <Loader2 className="w-4 h-4 animate-spin text-black" /> : <span>Create Account</span>}
+              {loading ? <Loader2 className="w-4 h-4 animate-spin text-black" /> : <span>Crear Cuenta</span>}
             </button>
           </form>
         )}
 
-        {/* Tab Content: Quick Minecraft Link */}
+        {/* Tab Content: Rápido Minecraft */}
         {authModalTab === "quick" && (
           <form onSubmit={handleQuickLink} className="space-y-3.5">
             <div className="text-center">
@@ -348,22 +348,22 @@ export function AuthModal() {
                 />
               </div>
               <h4 className="text-sm font-black text-white">
-                Quick Minecraft Link
+                Vínculo Rápido de Minecraft
               </h4>
               <p className="text-xs text-gray-400 mt-0.5">
-                Enter your in-game name to preview your skin and deliver orders.
+                Ingresa tu nombre de usuario del juego para asociar la entrega de tus paquetes.
               </p>
             </div>
 
             <div>
               <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">
-                Your Minecraft Nickname
+                Tu Nick de Minecraft
               </label>
               <input
                 type="text"
                 value={mcUsername}
                 onChange={(e) => setMcUsername(e.target.value)}
-                placeholder="e.g. cuac_xdpe"
+                placeholder="ej. cuac_xdpe"
                 className="w-full bg-[#0e1019] border border-[#1e2336] focus:border-[#ff9d00] rounded-lg px-3 py-2 text-xs font-bold text-white placeholder-gray-500 outline-none transition-colors"
                 required
               />
@@ -380,7 +380,7 @@ export function AuthModal() {
                 }`}
               >
                 <Laptop className="w-3.5 h-3.5" />
-                <span>Java Edition</span>
+                <span>Edición Java</span>
               </button>
               <button
                 type="button"
@@ -392,7 +392,7 @@ export function AuthModal() {
                 }`}
               >
                 <Smartphone className="w-3.5 h-3.5" />
-                <span>Bedrock Edition</span>
+                <span>Edición Bedrock</span>
               </button>
             </div>
 
@@ -401,7 +401,7 @@ export function AuthModal() {
               disabled={loading || !mcUsername.trim()}
               className="w-full py-2.5 rounded-lg font-black text-black text-xs sm:text-sm bg-[#ff9d00] hover:bg-[#ffad26] shadow-[0_0_15px_rgba(255,157,0,0.3)] disabled:opacity-50 transition-all flex items-center justify-center space-x-2 mt-3"
             >
-              {loading ? <Loader2 className="w-4 h-4 animate-spin text-black" /> : <span>Set Player & Continue</span>}
+              {loading ? <Loader2 className="w-4 h-4 animate-spin text-black" /> : <span>Establecer Jugador & Continuar</span>}
             </button>
           </form>
         )}

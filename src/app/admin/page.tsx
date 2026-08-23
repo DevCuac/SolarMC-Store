@@ -15,7 +15,7 @@ import {
   ArrowUpRight,
   ShieldCheck,
   CheckCircle2,
-  Clock
+  Users
 } from "lucide-react";
 import { formatCurrency, getMinecraftHeadRender } from "@/lib/utils";
 
@@ -56,10 +56,10 @@ export default function AdminOverviewPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-            Dashboard Overview
+            Vista General del Panel
           </h1>
           <p className="text-xs text-zinc-400 mt-1">
-            Real-time analytics, revenue overview, and recent SolarMC store transactions.
+            Analítica en tiempo real, volumen de ventas y transacciones recientes de SolarMC.
           </p>
         </div>
 
@@ -69,14 +69,14 @@ export default function AdminOverviewPage() {
             className="px-3.5 py-2 bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold rounded-lg shadow-sm transition-all flex items-center space-x-1.5"
           >
             <Plus className="w-4 h-4 text-black" />
-            <span>Add Product</span>
+            <span>Añadir Producto</span>
           </Link>
           <Link
             href="/admin/coupons"
             className="px-3.5 py-2 bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-200 text-xs font-semibold rounded-lg transition-all flex items-center space-x-1.5"
           >
             <Tag className="w-4 h-4 text-amber-400" />
-            <span>Create Coupon</span>
+            <span>Crear Cupón</span>
           </Link>
         </div>
       </div>
@@ -87,7 +87,7 @@ export default function AdminOverviewPage() {
         <div className="bg-[#0e1017] border border-white/[0.08] rounded-xl p-4 shadow-sm relative overflow-hidden group hover:border-amber-500/30 transition-all">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-              Total Revenue
+              Ingresos Totales
             </span>
             <div className="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
               <DollarSign className="w-4 h-4" />
@@ -98,7 +98,7 @@ export default function AdminOverviewPage() {
           </div>
           <div className="text-[11px] text-emerald-400 font-medium mt-1 flex items-center space-x-1">
             <TrendingUp className="w-3 h-3" />
-            <span>Live store volume</span>
+            <span>Volumen procesado en vivo</span>
           </div>
         </div>
 
@@ -106,7 +106,7 @@ export default function AdminOverviewPage() {
         <div className="bg-[#0e1017] border border-white/[0.08] rounded-xl p-4 shadow-sm relative overflow-hidden group hover:border-blue-500/30 transition-all">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-              Orders Processed
+              Pedidos Realizados
             </span>
             <div className="w-7 h-7 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
               <ShoppingCart className="w-4 h-4" />
@@ -116,7 +116,7 @@ export default function AdminOverviewPage() {
             {metrics.totalOrders}
           </div>
           <div className="text-[11px] text-zinc-400 mt-1">
-            Java & Bedrock players
+            Jugadores Java & Bedrock
           </div>
         </div>
 
@@ -124,7 +124,7 @@ export default function AdminOverviewPage() {
         <div className="bg-[#0e1017] border border-white/[0.08] rounded-xl p-4 shadow-sm relative overflow-hidden group hover:border-purple-500/30 transition-all">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-              Store Packages
+              Paquetes en Tienda
             </span>
             <div className="w-7 h-7 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
               <Package className="w-4 h-4" />
@@ -134,7 +134,7 @@ export default function AdminOverviewPage() {
             {metrics.totalProducts}
           </div>
           <div className="text-[11px] text-zinc-400 mt-1">
-            Ranks, passes & bundles
+            Rangos, pases & créditos
           </div>
         </div>
 
@@ -142,7 +142,7 @@ export default function AdminOverviewPage() {
         <div className="bg-[#0e1017] border border-white/[0.08] rounded-xl p-4 shadow-sm relative overflow-hidden group hover:border-amber-500/30 transition-all">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-              Active Coupons
+              Cupones Activos
             </span>
             <div className="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
               <Tag className="w-4 h-4" />
@@ -152,7 +152,7 @@ export default function AdminOverviewPage() {
             {metrics.totalCoupons}
           </div>
           <div className="text-[11px] text-zinc-400 mt-1">
-            Discount codes enabled
+            Descuentos disponibles
           </div>
         </div>
       </div>
@@ -161,14 +161,14 @@ export default function AdminOverviewPage() {
       <div className="bg-[#0e1017] border border-white/[0.08] rounded-xl p-5 shadow-sm space-y-3.5">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-sm font-bold text-white">Recent Transactions</h3>
-            <p className="text-xs text-zinc-400">Latest completed webstore checkouts</p>
+            <h3 className="text-sm font-bold text-white">Transacciones Recientes</h3>
+            <p className="text-xs text-zinc-400">Últimos pedidos completados en la tienda</p>
           </div>
           <Link
             href="/admin/orders"
             className="text-xs font-semibold text-amber-400 hover:underline flex items-center space-x-1"
           >
-            <span>View All</span>
+            <span>Ver Todos</span>
             <ArrowUpRight className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -177,18 +177,18 @@ export default function AdminOverviewPage() {
           <table className="w-full text-left text-xs">
             <thead>
               <tr className="border-b border-white/[0.08] text-zinc-400 uppercase text-[10px] font-bold tracking-wider bg-white/[0.02]">
-                <th className="py-2.5 px-3">Order #</th>
-                <th className="py-2.5 px-3">Minecraft Player</th>
-                <th className="py-2.5 px-3">Amount</th>
-                <th className="py-2.5 px-3">Status</th>
-                <th className="py-2.5 px-3">Timestamp</th>
+                <th className="py-2.5 px-3">Orden #</th>
+                <th className="py-2.5 px-3">Jugador Minecraft</th>
+                <th className="py-2.5 px-3">Monto</th>
+                <th className="py-2.5 px-3">Estado</th>
+                <th className="py-2.5 px-3">Fecha</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/[0.05]">
               {recentOrders.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="py-8 text-center text-zinc-500">
-                    No orders recorded yet.
+                    Aún no se han registrado órdenes.
                   </td>
                 </tr>
               ) : (
@@ -238,13 +238,24 @@ export default function AdminOverviewPage() {
       {/* Quick Action Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
         <Link
+          href="/admin/users"
+          className="bg-[#0e1017] border border-white/[0.08] hover:border-amber-500/40 rounded-xl p-4 transition-all group shadow-sm"
+        >
+          <Users className="w-5 h-5 text-purple-400 mb-2.5 group-hover:scale-105 transition-transform" />
+          <h4 className="font-bold text-white text-xs sm:text-sm">Gestión de Usuarios & Partners</h4>
+          <p className="text-xs text-zinc-400 mt-0.5">
+            Administra roles, códigos de creador, comisiones y contraseñas.
+          </p>
+        </Link>
+
+        <Link
           href="/admin/pages"
           className="bg-[#0e1017] border border-white/[0.08] hover:border-amber-500/40 rounded-xl p-4 transition-all group shadow-sm"
         >
           <FileText className="w-5 h-5 text-blue-400 mb-2.5 group-hover:scale-105 transition-transform" />
-          <h4 className="font-bold text-white text-xs sm:text-sm">Legal & CMS Pages</h4>
+          <h4 className="font-bold text-white text-xs sm:text-sm">Páginas Legales CMS</h4>
           <p className="text-xs text-zinc-400 mt-0.5">
-            Edit Terms of Service, Privacy Policy, Impressum, and Server Rules.
+            Edita Términos, Privacidad, Aviso Legal y Reglas del Servidor.
           </p>
         </Link>
 
@@ -253,20 +264,9 @@ export default function AdminOverviewPage() {
           className="bg-[#0e1017] border border-white/[0.08] hover:border-amber-500/40 rounded-xl p-4 transition-all group shadow-sm"
         >
           <Settings className="w-5 h-5 text-amber-400 mb-2.5 group-hover:scale-105 transition-transform" />
-          <h4 className="font-bold text-white text-xs sm:text-sm">Server & Store Settings</h4>
+          <h4 className="font-bold text-white text-xs sm:text-sm">Ajustes & Enlaces del Navbar</h4>
           <p className="text-xs text-zinc-400 mt-0.5">
-            Configure server IP, live player status, Discord link, and banner.
-          </p>
-        </Link>
-
-        <Link
-          href="/admin/products"
-          className="bg-[#0e1017] border border-white/[0.08] hover:border-amber-500/40 rounded-xl p-4 transition-all group shadow-sm"
-        >
-          <Package className="w-5 h-5 text-emerald-400 mb-2.5 group-hover:scale-105 transition-transform" />
-          <h4 className="font-bold text-white text-xs sm:text-sm">Manage Product Catalog</h4>
-          <p className="text-xs text-zinc-400 mt-0.5">
-            Configure pricing, badges, perks, and automated console commands.
+            Configura anuncios rotativos, IP, Discord y enlaces de la barra superior.
           </p>
         </Link>
       </div>

@@ -30,7 +30,7 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "email", placeholder: "player@oplegends.com" },
+        email: { label: "Email", type: "email", placeholder: "admin@solarmc.net" },
         password: { label: "Password", type: "password" },
         minecraftUsername: { label: "Minecraft Username", type: "text" },
         isMinecraftQuickLogin: { label: "Quick Login", type: "text" },
@@ -70,7 +70,7 @@ export const authOptions: NextAuthOptions = {
 
         // Standard Email & Password Authentication
         if (!credentials.email || !credentials.password) {
-          throw new Error("Please enter both email and password");
+          throw new Error("Por favor ingresa tu correo y contraseña");
         }
 
         const normalizedEmail = credentials.email.toLowerCase().trim();
@@ -79,19 +79,19 @@ export const authOptions: NextAuthOptions = {
         });
 
         if (!user || !user.password) {
-          throw new Error("Invalid email or password");
+          throw new Error("Credenciales inválidas");
         }
 
         const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
         if (!isPasswordValid) {
-          throw new Error("Invalid email or password");
+          throw new Error("Credenciales inválidas");
         }
 
-        const isAdminEmail = normalizedEmail === "angelriveradeveloper@gmail.com" || normalizedEmail === "admin@oplegends.com" || normalizedEmail === "admin@solarstore.com";
+        const isAdminEmail = normalizedEmail === "admin@solarmc.net" || user.role === "ADMIN";
 
         return {
           id: user.id,
-          name: user.name || user.minecraftUsername || "Player",
+          name: user.name || user.minecraftUsername || "Usuario",
           email: user.email,
           role: isAdminEmail ? "ADMIN" : user.role,
           minecraftUsername: user.minecraftUsername,
@@ -105,7 +105,7 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         const normalizedEmail = user.email ? user.email.toLowerCase().trim() : "";
-        const isAdminEmail = normalizedEmail === "angelriveradeveloper@gmail.com" || normalizedEmail === "admin@oplegends.com" || normalizedEmail === "admin@solarstore.com";
+        const isAdminEmail = normalizedEmail === "admin@solarmc.net" || (user as any).role === "ADMIN";
         token.role = isAdminEmail ? "ADMIN" : ((user as any).role || "USER");
         token.minecraftUsername = (user as any).minecraftUsername || null;
         token.minecraftEdition = (user as any).minecraftEdition || "Java";
@@ -136,7 +136,7 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
-  secret: process.env.NEXTAUTH_SECRET || "oplegends_minecraft_store_secret_jwt_key_2026_super_secure",
+  secret: process.env.NEXTAUTH_SECRET || "solarmc_minecraft_store_secret_jwt_key_2026_super_secure",
   pages: {
     signIn: "/",
   },

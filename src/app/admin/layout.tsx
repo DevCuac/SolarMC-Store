@@ -24,26 +24,26 @@ import {
 
 const navSections = [
   {
-    title: "OVERVIEW",
+    title: "PANEL PRINCIPAL",
     items: [
-      { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
+      { name: "Vista General", href: "/admin", icon: LayoutDashboard },
     ],
   },
   {
-    title: "STORE MANAGEMENT",
+    title: "GESTIÓN DE TIENDA",
     items: [
-      { name: "Product Packages", href: "/admin/products", icon: Package },
-      { name: "Categories", href: "/admin/categories", icon: Layers },
-      { name: "Discount Coupons", href: "/admin/coupons", icon: Tag },
-      { name: "Orders & Sales", href: "/admin/orders", icon: ShoppingCart },
-      { name: "Users & Partners", href: "/admin/users", icon: Users },
+      { name: "Paquetes & Rangos", href: "/admin/products", icon: Package },
+      { name: "Categorías", href: "/admin/categories", icon: Layers },
+      { name: "Cupones de Descuento", href: "/admin/coupons", icon: Tag },
+      { name: "Pedidos & Ventas", href: "/admin/orders", icon: ShoppingCart },
+      { name: "Usuarios & Partners", href: "/admin/users", icon: Users },
     ],
   },
   {
-    title: "CONFIGURATION",
+    title: "CONFIGURACIÓN",
     items: [
-      { name: "Legal CMS Pages", href: "/admin/pages", icon: FileText },
-      { name: "Store & Server Settings", href: "/admin/settings", icon: Settings },
+      { name: "Páginas Legales CMS", href: "/admin/pages", icon: FileText },
+      { name: "Ajustes del Servidor", href: "/admin/settings", icon: Settings },
     ],
   },
 ];
@@ -56,16 +56,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (status === "loading") {
     return (
       <div className="min-h-screen bg-[#090a0f] flex items-center justify-center text-zinc-400 text-xs font-medium">
-        Loading admin console...
+        Cargando consola de administración...
       </div>
     );
   }
 
   const userEmail = session?.user?.email?.toLowerCase().trim();
   const isAdmin = (session?.user as any)?.role === "ADMIN" || 
-                  userEmail === "angelriveradeveloper@gmail.com" || 
-                  userEmail === "admin@solarmc.net" || 
-                  userEmail === "admin@oplegends.com";
+                  userEmail === "admin@solarmc.net";
 
   if (!session || !isAdmin) {
     return (
@@ -74,9 +72,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="w-12 h-12 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 mx-auto mb-4">
             <Shield className="w-6 h-6" />
           </div>
-          <h2 className="text-xl font-bold text-white tracking-tight">Admin Access Required</h2>
+          <h2 className="text-xl font-bold text-white tracking-tight">Acceso de Administrador Requerido</h2>
           <p className="text-xs text-zinc-400 mt-2 leading-relaxed">
-            You must be signed in with an authorized administrator account (<code className="text-amber-300 font-mono">angelriveradeveloper@gmail.com</code>) to access the control panel.
+            Debes iniciar sesión con una cuenta de administrador autorizada (<code className="text-amber-300 font-mono">admin@solarmc.net</code>) para acceder al panel.
           </p>
 
           <div className="mt-6 space-y-2.5">
@@ -84,13 +82,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               href="/"
               className="w-full py-2.5 px-4 rounded-lg font-bold text-black text-xs bg-amber-500 hover:bg-amber-400 shadow-md transition-all block"
             >
-              Sign In on Webstore
+              Iniciar Sesión en la Tienda
             </Link>
             <Link
               href="/"
               className="w-full py-2 px-4 rounded-lg font-medium text-zinc-400 hover:text-white text-xs bg-white/[0.04] hover:bg-white/[0.08] transition-all block"
             >
-              Return to Store
+              Volver a la Tienda
             </Link>
           </div>
         </div>
@@ -133,7 +131,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <div>
                 <h1 className="text-xs font-bold text-white tracking-tight">SolarMC Network</h1>
                 <span className="text-[10px] text-amber-400 font-semibold tracking-wider uppercase block">
-                  Admin Console
+                  Panel de Administración
                 </span>
               </div>
             </div>
@@ -142,7 +140,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               href="/"
               target="_blank"
               className="p-1.5 text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.05] rounded-md transition-colors"
-              title="Open Public Store"
+              title="Abrir Tienda Pública"
             >
               <ExternalLink className="w-3.5 h-3.5" />
             </Link>
@@ -186,7 +184,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             className="flex items-center space-x-2 text-xs font-medium text-zinc-400 hover:text-zinc-200 px-3 py-1.5 rounded-lg hover:bg-white/[0.04] transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Back to Storefront</span>
+            <span>Volver a la Tienda</span>
           </Link>
 
           <div className="bg-[#11131c] border border-white/[0.06] rounded-lg p-2.5 flex items-center justify-between">
@@ -201,7 +199,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <button
               onClick={() => signOut({ callbackUrl: "/" })}
               className="p-1.5 text-zinc-500 hover:text-red-400 rounded-md hover:bg-white/[0.05] transition-colors"
-              title="Logout"
+              title="Cerrar Sesión"
             >
               <LogOut className="w-3.5 h-3.5" />
             </button>

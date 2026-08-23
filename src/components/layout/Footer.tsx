@@ -20,11 +20,11 @@ export function Footer() {
       <div className="max-w-6xl mx-auto px-4 py-8 text-center space-y-2">
         <p className="text-xs sm:text-sm font-semibold text-gray-300">
           © 2020–{currentYear}{" "}
-          <span className="text-[#ff9d00] font-black">SolarMC</span>, associated with{" "}
-          <span className="text-gray-200 font-bold">SolarMC Services LLC</span>.
+          <span className="text-[#ff9d00] font-black">SolarMC</span>, asociado con{" "}
+          <span className="text-gray-200 font-bold">SolarMC Services LLC</span>. Todos los derechos reservados.
         </p>
         <p className="text-[10px] sm:text-[11px] font-bold tracking-wider text-gray-500 uppercase">
-          MINECRAFT IS © MOJANG STUDIOS 2009–{currentYear}. WE ARE NOT AFFILIATED WITH MOJANG STUDIOS.
+          MINECRAFT ES © MOJANG STUDIOS 2009–{currentYear}. NO ESTAMOS AFILIADOS CON MOJANG STUDIOS NI MICROSOFT.
         </p>
       </div>
 
@@ -39,7 +39,7 @@ export function Footer() {
             </div>
             <span className="text-gray-600 hidden sm:inline">|</span>
             <span className="text-[11px] text-gray-400 leading-tight">
-              This website and its checkout process is operated by our online reseller & Merchant of Record, Tebex Limited, who also handles order-related inquiries and refunds.
+              Este sitio web y su proceso de compra son operados por nuestro revendedor oficial & Merchant of Record, Tebex Limited.
             </span>
           </div>
 
@@ -49,19 +49,25 @@ export function Footer() {
               href="/impressum"
               className="hover:text-amber-300 transition-colors"
             >
-              Impressum
+              Aviso Legal (Impressum)
             </Link>
             <Link
               href="/terms"
               className="hover:text-amber-300 transition-colors"
             >
-              Terms & Conditions
+              Términos & Condiciones
             </Link>
             <Link
               href="/privacy"
               className="hover:text-amber-300 transition-colors"
             >
-              Privacy Policy
+              Política de Privacidad
+            </Link>
+            <Link
+              href="/rules"
+              className="hover:text-amber-300 transition-colors"
+            >
+              Reglas del Servidor
             </Link>
           </div>
         </div>

@@ -28,7 +28,7 @@ export default function AdminCouponsPage() {
       const data = await res.json();
       if (data.coupons) setCoupons(data.coupons);
     } catch (e) {
-      toast.error("Failed to load coupons");
+      toast.error("Error al cargar cupones");
     } finally {
       setLoading(false);
     }
@@ -69,7 +69,7 @@ export default function AdminCouponsPage() {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.code.trim() || !formData.discountValue) {
-      toast.error("Code and discount value are required");
+      toast.error("El código y el valor del descuento son obligatorios");
       return;
     }
 
@@ -100,22 +100,22 @@ export default function AdminCouponsPage() {
 
       if (res.ok) {
         toast.success(
-          editingCoupon ? "Coupon updated successfully!" : "Coupon created successfully!"
+          editingCoupon ? "¡Cupón actualizado con éxito!" : "¡Cupón creado con éxito!"
         );
         setIsModalOpen(false);
         loadCoupons();
       } else {
-        toast.error(data.error || "Failed to save coupon");
+        toast.error(data.error || "Error al guardar cupón");
       }
     } catch (e) {
-      toast.error("Error saving coupon");
+      toast.error("Error al guardar cupón");
     } finally {
       setModalLoading(false);
     }
   };
 
   const handleDelete = async (id: string, code: string) => {
-    if (!confirm(`Are you sure you want to delete coupon code "${code}"?`)) return;
+    if (!confirm(`¿Estás seguro de eliminar el cupón "${code}"?`)) return;
 
     try {
       const res = await fetch(`/api/admin/coupons/${id}`, {
@@ -123,13 +123,13 @@ export default function AdminCouponsPage() {
       });
 
       if (res.ok) {
-        toast.success("Coupon deleted successfully");
+        toast.success("Cupón eliminado correctamente");
         setCoupons((prev) => prev.filter((c) => c.id !== id));
       } else {
-        toast.error("Failed to delete coupon");
+        toast.error("Error al eliminar cupón");
       }
     } catch (e) {
-      toast.error("Error deleting coupon");
+      toast.error("Error al eliminar cupón");
     }
   };
 
@@ -139,10 +139,10 @@ export default function AdminCouponsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-            Discount Coupons & Codes
+            Cupones & Códigos de Descuento
           </h1>
           <p className="text-xs text-zinc-400 mt-1">
-            Create promotional discount codes (% percentage or fixed $ amounts) for your players.
+            Crea códigos de descuento promocionales (% porcentaje o monto fijo en $) para tus jugadores.
           </p>
         </div>
 
@@ -151,7 +151,7 @@ export default function AdminCouponsPage() {
           className="px-3.5 py-2 bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold rounded-lg shadow-sm transition-all flex items-center space-x-1.5 self-start sm:self-auto"
         >
           <Plus className="w-4 h-4 text-black" />
-          <span>New Coupon Code</span>
+          <span>Nuevo Cupón</span>
         </button>
       </div>
 
@@ -163,20 +163,20 @@ export default function AdminCouponsPage() {
           </div>
         ) : coupons.length === 0 ? (
           <div className="py-16 text-center text-zinc-500 text-xs">
-            No discount coupon codes found.
+            No se encontraron cupones de descuento.
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
                 <tr className="border-b border-white/[0.08] text-zinc-400 uppercase text-[10px] font-bold tracking-wider bg-white/[0.02]">
-                  <th className="py-3 px-4">Coupon Code</th>
-                  <th className="py-3 px-4">Discount</th>
-                  <th className="py-3 px-4">Min. Spend</th>
-                  <th className="py-3 px-4">Redemptions</th>
-                  <th className="py-3 px-4">Expiration</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
+                  <th className="py-3 px-4">Código</th>
+                  <th className="py-3 px-4">Descuento</th>
+                  <th className="py-3 px-4">Compra Mínima</th>
+                  <th className="py-3 px-4">Usos</th>
+                  <th className="py-3 px-4">Expiración</th>
+                  <th className="py-3 px-4">Estado</th>
+                  <th className="py-3 px-4 text-right">Acciones</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/[0.05]">
@@ -189,11 +189,11 @@ export default function AdminCouponsPage() {
                     </td>
                     <td className="py-3 px-4 font-bold text-white">
                       {coupon.discountType === "PERCENTAGE"
-                        ? `${coupon.discountValue}% OFF`
-                        : `${formatCurrency(coupon.discountValue)} OFF`}
+                        ? `${coupon.discountValue}% DTO`
+                        : `${formatCurrency(coupon.discountValue)} DTO`}
                     </td>
                     <td className="py-3 px-4 text-zinc-400">
-                      {coupon.minSpend > 0 ? formatCurrency(coupon.minSpend) : "None"}
+                      {coupon.minSpend > 0 ? formatCurrency(coupon.minSpend) : "Ninguna"}
                     </td>
                     <td className="py-3 px-4">
                       <span className="font-semibold text-zinc-200">{coupon.usesCount}</span>
@@ -204,16 +204,16 @@ export default function AdminCouponsPage() {
                       )}
                     </td>
                     <td className="py-3 px-4 text-zinc-400">
-                      {coupon.expiresAt ? new Date(coupon.expiresAt).toLocaleDateString() : "Never"}
+                      {coupon.expiresAt ? new Date(coupon.expiresAt).toLocaleDateString() : "Nunca"}
                     </td>
                     <td className="py-3 px-4">
                       {coupon.isActive ? (
                         <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded text-[10px] font-semibold">
-                          Active
+                          Activo
                         </span>
                       ) : (
                         <span className="px-2 py-0.5 bg-red-500/10 text-red-400 border border-red-500/20 rounded text-[10px] font-semibold">
-                          Disabled
+                          Desactivado
                         </span>
                       )}
                     </td>
@@ -221,14 +221,14 @@ export default function AdminCouponsPage() {
                       <button
                         onClick={() => openEditModal(coupon)}
                         className="p-1.5 text-zinc-400 hover:text-white hover:bg-white/[0.06] rounded transition-colors"
-                        title="Edit Coupon"
+                        title="Editar Cupón"
                       >
                         <Edit className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => handleDelete(coupon.id, coupon.code)}
                         className="p-1.5 text-zinc-500 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors"
-                        title="Delete Coupon"
+                        title="Eliminar Cupón"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -257,21 +257,21 @@ export default function AdminCouponsPage() {
                 <Tag className="w-4 h-4" />
               </div>
               <h3 className="text-base font-bold text-white">
-                {editingCoupon ? "Edit Coupon Code" : "New Coupon Code"}
+                {editingCoupon ? "Editar Cupón de Descuento" : "Nuevo Cupón de Descuento"}
               </h3>
             </div>
 
             <form onSubmit={handleSave} className="space-y-3.5">
               <div>
                 <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
-                  Coupon Code *
+                  Código de Cupón *
                 </label>
                 <input
                   type="text"
                   value={formData.code}
                   onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
-                  placeholder="e.g. SOLAR50"
-                  className="w-full bg-[#090a0f] border border-white/[0.08] focus:border-amber-500/50 rounded-lg px-3 py-2 text-xs font-mono font-bold text-amber-300 outline-none"
+                  placeholder="ej. SOLAR50"
+                  className="w-full bg-[#090a0f] border border-white/[0.08] focus:border-amber-500/50 rounded-lg px-3 py-2 text-xs font-mono font-bold text-amber-300 outline-none uppercase"
                   required
                 />
               </div>
@@ -279,21 +279,21 @@ export default function AdminCouponsPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
-                    Discount Type
+                    Tipo de Descuento
                   </label>
                   <select
                     value={formData.discountType}
                     onChange={(e) => setFormData({ ...formData, discountType: e.target.value })}
                     className="w-full bg-[#090a0f] border border-white/[0.08] focus:border-amber-500/50 rounded-lg px-2.5 py-1.5 text-xs text-zinc-100 outline-none"
                   >
-                    <option value="PERCENTAGE">Percentage (%)</option>
-                    <option value="FIXED">Fixed Amount ($)</option>
+                    <option value="PERCENTAGE">Porcentaje (%)</option>
+                    <option value="FIXED">Monto Fijo ($ USD)</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
-                    Value *
+                    Valor *
                   </label>
                   <input
                     type="number"
@@ -310,7 +310,7 @@ export default function AdminCouponsPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
-                    Min. Spend ($)
+                    Compra Mínima ($)
                   </label>
                   <input
                     type="number"
@@ -324,13 +324,13 @@ export default function AdminCouponsPage() {
 
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
-                    Max Uses Limit
+                    Límite de Usos Máximos
                   </label>
                   <input
                     type="number"
                     value={formData.maxUses}
                     onChange={(e) => setFormData({ ...formData, maxUses: e.target.value })}
-                    placeholder="Unlimited"
+                    placeholder="Ilimitado"
                     className="w-full bg-[#090a0f] border border-white/[0.08] focus:border-amber-500/50 rounded-lg px-2.5 py-1.5 text-xs text-zinc-100 outline-none"
                   />
                 </div>
@@ -338,7 +338,7 @@ export default function AdminCouponsPage() {
 
               <div>
                 <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
-                  Expiration Date (Optional)
+                  Fecha de Expiración (Opcional)
                 </label>
                 <input
                   type="date"
@@ -357,7 +357,7 @@ export default function AdminCouponsPage() {
                   className="w-3.5 h-3.5 rounded text-amber-500 bg-[#090a0f] border-white/[0.2]"
                 />
                 <label htmlFor="couponActive" className="text-xs text-zinc-300 font-medium cursor-pointer">
-                  Coupon is active and ready to be redeemed
+                  El cupón está activo y listo para ser canjeado
                 </label>
               </div>
 
@@ -367,7 +367,7 @@ export default function AdminCouponsPage() {
                   onClick={() => setIsModalOpen(false)}
                   className="px-3.5 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-white bg-white/[0.05]"
                 >
-                  Cancel
+                  Cancelar
                 </button>
                 <button
                   type="submit"
@@ -377,7 +377,7 @@ export default function AdminCouponsPage() {
                   {modalLoading ? (
                     <Loader2 className="w-3.5 h-3.5 animate-spin text-black" />
                   ) : (
-                    <span>Save Coupon</span>
+                    <span>Guardar Cupón</span>
                   )}
                 </button>
               </div>

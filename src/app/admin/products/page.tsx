@@ -65,7 +65,7 @@ export default function AdminProductsPage() {
         setProducts(parsed);
       }
     } catch (e) {
-      toast.error("Failed to load products");
+      toast.error("Error al cargar productos");
     } finally {
       setLoading(false);
     }
@@ -83,9 +83,9 @@ export default function AdminProductsPage() {
       description: "",
       price: "",
       originalPrice: "",
-      badge: "BEST SELLER",
+      badge: "MÁS VENDIDO",
       categoryId: categories[0]?.id || "",
-      perks: ["Instant in-game delivery", "Exclusive Solar chat prefix"],
+      perks: ["Entrega instantánea en el juego", "Prefijo exclusivo en el chat Solar"],
       commands: ["credits add {player} 1000"],
       isActive: true,
     });
@@ -112,7 +112,7 @@ export default function AdminProductsPage() {
   const handleSaveProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.price || !formData.categoryId) {
-      toast.error("Name, price and category are required");
+      toast.error("Nombre, precio y categoría son obligatorios");
       return;
     }
 
@@ -149,22 +149,22 @@ export default function AdminProductsPage() {
 
       if (res.ok) {
         toast.success(
-          editingProduct ? "Product package updated successfully!" : "Product package created successfully!"
+          editingProduct ? "¡Paquete actualizado con éxito!" : "¡Paquete creado con éxito!"
         );
         setIsModalOpen(false);
         loadData();
       } else {
-        toast.error(data.error || "Failed to save product");
+        toast.error(data.error || "Error al guardar paquete");
       }
     } catch (e) {
-      toast.error("Error saving product");
+      toast.error("Error al guardar paquete");
     } finally {
       setModalLoading(false);
     }
   };
 
   const handleDeleteProduct = async (id: string, name: string) => {
-    if (!confirm(`Are you sure you want to delete package "${name}"?`)) return;
+    if (!confirm(`¿Estás seguro de eliminar el paquete "${name}"?`)) return;
 
     try {
       const res = await fetch(`/api/admin/products/${id}`, {
@@ -172,13 +172,13 @@ export default function AdminProductsPage() {
       });
 
       if (res.ok) {
-        toast.success("Product deleted successfully");
+        toast.success("Paquete eliminado correctamente");
         setProducts((prev) => prev.filter((p) => p.id !== id));
       } else {
-        toast.error("Failed to delete product");
+        toast.error("Error al eliminar paquete");
       }
     } catch (e) {
-      toast.error("Error deleting product");
+      toast.error("Error al eliminar paquete");
     }
   };
 
@@ -194,10 +194,10 @@ export default function AdminProductsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-            Product Packages
+            Paquetes & Rangos de la Tienda
           </h1>
           <p className="text-xs text-zinc-400 mt-1">
-            Create, price, and manage store items, rank perks, and automated console commands.
+            Crea, pon precio y administra artículos, ventajas de rangos y comandos de consola automatizados.
           </p>
         </div>
 
@@ -206,7 +206,7 @@ export default function AdminProductsPage() {
           className="px-3.5 py-2 bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold rounded-lg shadow-sm transition-all flex items-center space-x-1.5 self-start sm:self-auto"
         >
           <Plus className="w-4 h-4 text-black" />
-          <span>New Product Package</span>
+          <span>Nuevo Paquete</span>
         </button>
       </div>
 
@@ -218,7 +218,7 @@ export default function AdminProductsPage() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by package name or description..."
+            placeholder="Buscar por nombre de paquete o descripción..."
             className="w-full bg-[#11131c] border border-white/[0.08] focus:border-amber-500/50 rounded-lg pl-9 pr-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 outline-none transition-colors"
           />
         </div>
@@ -229,7 +229,7 @@ export default function AdminProductsPage() {
             onChange={(e) => setCategoryFilter(e.target.value)}
             className="w-full bg-[#11131c] border border-white/[0.08] focus:border-amber-500/50 rounded-lg px-3 py-2 text-xs text-zinc-300 outline-none transition-colors"
           >
-            <option value="all">All Categories ({products.length})</option>
+            <option value="all">Todas las Categorías ({products.length})</option>
             {categories.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name}
@@ -247,20 +247,20 @@ export default function AdminProductsPage() {
           </div>
         ) : filteredProducts.length === 0 ? (
           <div className="py-16 text-center text-zinc-500 text-xs">
-            No product packages found matching your filter criteria.
+            No se encontraron paquetes que coincidan con la búsqueda.
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
                 <tr className="border-b border-white/[0.08] text-zinc-400 uppercase text-[11px] font-semibold tracking-wider bg-white/[0.02]">
-                  <th className="py-3 px-4">Package</th>
-                  <th className="py-3 px-4">Category</th>
-                  <th className="py-3 px-4">Badge</th>
-                  <th className="py-3 px-4">Price</th>
-                  <th className="py-3 px-4">Perks</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
+                  <th className="py-3 px-4">Paquete</th>
+                  <th className="py-3 px-4">Categoría</th>
+                  <th className="py-3 px-4">Insignia</th>
+                  <th className="py-3 px-4">Precio</th>
+                  <th className="py-3 px-4">Ventajas</th>
+                  <th className="py-3 px-4">Estado</th>
+                  <th className="py-3 px-4 text-right">Acciones</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/[0.05]">
@@ -290,17 +290,17 @@ export default function AdminProductsPage() {
                     </td>
                     <td className="py-3 px-4 text-zinc-400">
                       <span className="px-2 py-0.5 bg-white/[0.03] rounded border border-white/[0.06] text-[11px]">
-                        {product.perks?.length || 0} items
+                        {product.perks?.length || 0} beneficios
                       </span>
                     </td>
                     <td className="py-3 px-4">
                       {product.isActive ? (
                         <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded text-[10px] font-semibold">
-                          Active
+                          Activo
                         </span>
                       ) : (
                         <span className="px-2 py-0.5 bg-zinc-800 text-zinc-400 rounded text-[10px] font-semibold">
-                          Hidden
+                          Oculto
                         </span>
                       )}
                     </td>
@@ -308,14 +308,14 @@ export default function AdminProductsPage() {
                       <button
                         onClick={() => openEditModal(product)}
                         className="p-1.5 text-zinc-400 hover:text-white hover:bg-white/[0.06] rounded transition-colors"
-                        title="Edit Package"
+                        title="Editar Paquete"
                       >
                         <Edit className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => handleDeleteProduct(product.id, product.name)}
                         className="p-1.5 text-zinc-500 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors"
-                        title="Delete Package"
+                        title="Eliminar Paquete"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -344,7 +344,7 @@ export default function AdminProductsPage() {
                 <Package className="w-4 h-4" />
               </div>
               <h3 className="text-base font-bold text-white">
-                {editingProduct ? "Edit Product Package" : "Create New Product Package"}
+                {editingProduct ? "Editar Paquete de Producto" : "Crear Nuevo Paquete"}
               </h3>
             </div>
 
@@ -352,13 +352,13 @@ export default function AdminProductsPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
-                    Package Name *
+                    Nombre del Paquete *
                   </label>
                   <input
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="e.g. 4500 Solar Credits or Titan Rank"
+                    placeholder="ej. 4500 Créditos Solar o Rango Titán"
                     className="w-full bg-[#090a0f] border border-white/[0.08] focus:border-amber-500/50 rounded-lg px-3 py-2 text-xs text-zinc-100 outline-none"
                     required
                   />
@@ -366,7 +366,7 @@ export default function AdminProductsPage() {
 
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
-                    Category *
+                    Categoría *
                   </label>
                   <select
                     value={formData.categoryId}
@@ -386,7 +386,7 @@ export default function AdminProductsPage() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
-                    Price ($ USD) *
+                    Precio ($ USD) *
                   </label>
                   <input
                     type="number"
@@ -401,7 +401,7 @@ export default function AdminProductsPage() {
 
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
-                    Original Price (Optional)
+                    Precio Original (Opcional)
                   </label>
                   <input
                     type="number"
@@ -415,13 +415,13 @@ export default function AdminProductsPage() {
 
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
-                    Badge Label
+                    Insignia / Badge
                   </label>
                   <input
                     type="text"
                     value={formData.badge}
                     onChange={(e) => setFormData({ ...formData, badge: e.target.value })}
-                    placeholder="BEST SELLER, MONTHLY..."
+                    placeholder="MÁS VENDIDO, MENSUAL..."
                     className="w-full bg-[#090a0f] border border-white/[0.08] focus:border-amber-500/50 rounded-lg px-3 py-2 text-xs text-zinc-100 outline-none"
                   />
                 </div>
@@ -429,13 +429,13 @@ export default function AdminProductsPage() {
 
               <div>
                 <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
-                  Description
+                  Descripción
                 </label>
                 <textarea
                   rows={2}
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Describe this package's benefits..."
+                  placeholder="Describe las ventajas y detalles de este paquete..."
                   className="w-full bg-[#090a0f] border border-white/[0.08] focus:border-amber-500/50 rounded-lg px-3 py-2 text-xs text-zinc-100 outline-none"
                 />
               </div>
@@ -445,14 +445,14 @@ export default function AdminProductsPage() {
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold text-zinc-300 flex items-center space-x-1.5">
                     <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                    <span>Bullet Point Perks</span>
+                    <span>Ventajas y Beneficios (Viñetas)</span>
                   </span>
                   <button
                     type="button"
                     onClick={() => setFormData({ ...formData, perks: [...formData.perks, ""] })}
                     className="text-[11px] text-amber-400 hover:underline font-semibold"
                   >
-                    + Add Perk
+                    + Añadir Ventaja
                   </button>
                 </div>
 
@@ -466,7 +466,7 @@ export default function AdminProductsPage() {
                         copy[index] = e.target.value;
                         setFormData({ ...formData, perks: copy });
                       }}
-                      placeholder={`Perk #${index + 1}`}
+                      placeholder={`Ventaja #${index + 1}`}
                       className="flex-1 bg-[#11131c] border border-white/[0.08] rounded px-2.5 py-1.5 text-xs text-zinc-100 outline-none"
                     />
                     {formData.perks.length > 1 && (
@@ -490,14 +490,14 @@ export default function AdminProductsPage() {
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold text-zinc-300 flex items-center space-x-1.5">
                     <Terminal className="w-3.5 h-3.5 text-amber-400" />
-                    <span>In-Game Console Commands (Use &#123;player&#125;)</span>
+                    <span>Comandos de Consola en el Servidor (Usa &#123;player&#125;)</span>
                   </span>
                   <button
                     type="button"
                     onClick={() => setFormData({ ...formData, commands: [...formData.commands, ""] })}
                     className="text-[11px] text-amber-400 hover:underline font-semibold"
                   >
-                    + Add Command
+                    + Añadir Comando
                   </button>
                 </div>
 
@@ -511,7 +511,7 @@ export default function AdminProductsPage() {
                         copy[index] = e.target.value;
                         setFormData({ ...formData, commands: copy });
                       }}
-                      placeholder="e.g. lp user {player} parent add overlord"
+                      placeholder="ej. lp user {player} parent add overlord"
                       className="flex-1 bg-[#11131c] border border-white/[0.08] rounded px-2.5 py-1.5 text-xs text-amber-300 font-mono outline-none"
                     />
                     {formData.commands.length > 1 && (
@@ -536,7 +536,7 @@ export default function AdminProductsPage() {
                   onClick={() => setIsModalOpen(false)}
                   className="px-3.5 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-white bg-white/[0.05]"
                 >
-                  Cancel
+                  Cancelar
                 </button>
                 <button
                   type="submit"
@@ -546,7 +546,7 @@ export default function AdminProductsPage() {
                   {modalLoading ? (
                     <Loader2 className="w-3.5 h-3.5 animate-spin text-black" />
                   ) : (
-                    <span>Save Package</span>
+                    <span>Guardar Paquete</span>
                   )}
                 </button>
               </div>

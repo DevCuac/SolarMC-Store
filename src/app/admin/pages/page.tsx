@@ -17,10 +17,10 @@ import { toast } from "sonner";
 import Link from "next/link";
 
 const availablePages = [
-  { slug: "terms", label: "Terms & Conditions", icon: BookOpen, href: "/terms" },
-  { slug: "privacy", label: "Privacy Policy", icon: ShieldCheck, href: "/privacy" },
-  { slug: "impressum", label: "Impressum / Legal", icon: Users, href: "/impressum" },
-  { slug: "rules", label: "Server Rules", icon: Scale, href: "/rules" },
+  { slug: "terms", label: "Términos & Condiciones", icon: BookOpen, href: "/terms" },
+  { slug: "privacy", label: "Política de Privacidad", icon: ShieldCheck, href: "/privacy" },
+  { slug: "impressum", label: "Aviso Legal (Impressum)", icon: Users, href: "/impressum" },
+  { slug: "rules", label: "Reglas del Servidor", icon: Scale, href: "/rules" },
 ];
 
 export default function AdminPagesCMS() {
@@ -50,7 +50,7 @@ export default function AdminPagesCMS() {
         }
       }
     } catch (e) {
-      toast.error("Failed to load CMS pages");
+      toast.error("Error al cargar páginas legales");
     } finally {
       setLoading(false);
     }
@@ -88,16 +88,16 @@ export default function AdminPagesCMS() {
       const data = await res.json();
 
       if (res.ok) {
-        toast.success(`"${currentTitle}" updated successfully!`);
+        toast.success(`¡"${currentTitle}" actualizada con éxito!`);
         setPages((prev) => ({
           ...prev,
           [activeSlug]: { title: currentTitle, content: currentContent },
         }));
       } else {
-        toast.error(data.error || "Failed to update page");
+        toast.error(data.error || "Error al actualizar página");
       }
     } catch (e) {
-      toast.error("Error saving CMS page");
+      toast.error("Error al guardar página");
     } finally {
       setSaving(false);
     }
@@ -111,10 +111,10 @@ export default function AdminPagesCMS() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-            Legal & CMS Content Pages
+            Páginas Legales & CMS
           </h1>
           <p className="text-xs text-zinc-400 mt-1">
-            Edit and customize Terms & Conditions, Privacy Policy, Impressum, and Server Rules.
+            Edita y personaliza Términos y Condiciones, Política de Privacidad, Aviso Legal y Reglas del Servidor.
           </p>
         </div>
 
@@ -125,7 +125,7 @@ export default function AdminPagesCMS() {
             className="px-3 py-1.5 bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-200 text-xs font-semibold rounded-lg transition-all flex items-center space-x-1.5 self-start sm:self-auto"
           >
             <ExternalLink className="w-3.5 h-3.5" />
-            <span>View Live Page</span>
+            <span>Ver Página en Vivo</span>
           </Link>
         )}
       </div>
@@ -164,7 +164,7 @@ export default function AdminPagesCMS() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/[0.08]">
               <div className="flex-1">
                 <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
-                  Page Title
+                  Título de la Página
                 </label>
                 <input
                   type="text"
@@ -198,7 +198,7 @@ export default function AdminPagesCMS() {
                   }`}
                 >
                   <Eye className="w-3 h-3" />
-                  <span>Live Preview</span>
+                  <span>Vista Previa</span>
                 </button>
               </div>
             </div>
@@ -206,19 +206,19 @@ export default function AdminPagesCMS() {
             {/* Content Field or Live Preview */}
             {previewMode ? (
               <div className="bg-[#090a0f] border border-white/[0.08] rounded-lg p-5 min-h-[350px] text-xs text-zinc-300 whitespace-pre-wrap leading-relaxed">
-                {currentContent || "(Page content is empty)"}
+                {currentContent || "(El contenido de la página está vacío)"}
               </div>
             ) : (
               <div>
                 <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
-                  Markdown Content
+                  Contenido en Markdown
                 </label>
                 <textarea
                   rows={14}
                   value={currentContent}
                   onChange={(e) => setCurrentContent(e.target.value)}
                   className="w-full bg-[#090a0f] border border-white/[0.08] focus:border-amber-500/50 rounded-lg p-3 text-xs font-mono text-zinc-200 outline-none leading-relaxed"
-                  placeholder="Type markdown content here..."
+                  placeholder="Escribe el contenido en formato Markdown aquí..."
                 />
               </div>
             )}
@@ -226,7 +226,7 @@ export default function AdminPagesCMS() {
             {/* Submit Bar */}
             <div className="flex items-center justify-between pt-3 border-t border-white/[0.08]">
               <span className="text-[11px] text-zinc-500">
-                Changes take effect immediately on the storefront.
+                Los cambios se publican de inmediato en la tienda.
               </span>
 
               <button
@@ -237,12 +237,12 @@ export default function AdminPagesCMS() {
                 {saving ? (
                   <>
                     <Loader2 className="w-3.5 h-3.5 animate-spin text-black" />
-                    <span>Saving...</span>
+                    <span>Guardando...</span>
                   </>
                 ) : (
                   <>
                     <Save className="w-3.5 h-3.5" />
-                    <span>Save Changes</span>
+                    <span>Guardar Cambios</span>
                   </>
                 )}
               </button>

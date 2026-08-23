@@ -43,7 +43,7 @@ export default function AdminSettingsPage() {
     discord_url: "https://discord.gg/solarmc",
     discord_online_count: "2611",
     server_online_count: "861",
-    support_email: "angelriveradeveloper@gmail.com",
+    support_email: "soporte@solarmc.net",
     currency_symbol: "$",
     disclaimer_text_1: "Credits are only usable under the terms of the SolarMC Credits Disclaimers. Credits are a virtual intangible currency which cannot be transferred outside of the SolarMC Network.",
     disclaimer_text_2: "Please make sure you are well informed of our rules, terms of service, and privacy policy before making any purchase on our web store.",

@@ -29,7 +29,7 @@ export default function AdminOrdersPage() {
       const data = await res.json();
       if (data.orders) setOrders(data.orders);
     } catch (e) {
-      toast.error("Failed to load orders");
+      toast.error("Error al cargar órdenes");
     } finally {
       setLoading(false);
     }
@@ -54,10 +54,10 @@ export default function AdminOrdersPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-            Orders & Transactions
+            Pedidos & Transacciones
           </h1>
           <p className="text-xs text-zinc-400 mt-1">
-            Complete transaction history, in-game command delivery logs, and customer receipts.
+            Historial completo de compras, registro de comandos automáticos y recibos de jugadores.
           </p>
         </div>
       </div>
@@ -70,7 +70,7 @@ export default function AdminOrdersPage() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by Order #, Minecraft Username or Email..."
+            placeholder="Buscar por Orden #, Usuario de Minecraft o Correo..."
             className="w-full bg-[#11131c] border border-white/[0.08] focus:border-amber-500/50 rounded-lg pl-9 pr-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 outline-none transition-colors"
           />
         </div>
@@ -81,10 +81,10 @@ export default function AdminOrdersPage() {
             onChange={(e) => setStatusFilter(e.target.value)}
             className="w-full bg-[#11131c] border border-white/[0.08] focus:border-amber-500/50 rounded-lg px-3 py-2 text-xs text-zinc-300 outline-none transition-colors"
           >
-            <option value="ALL">All Statuses ({orders.length})</option>
-            <option value="COMPLETED">Completed</option>
-            <option value="PENDING">Pending</option>
-            <option value="REFUNDED">Refunded</option>
+            <option value="ALL">Todos los Estados ({orders.length})</option>
+            <option value="COMPLETED">Completados</option>
+            <option value="PENDING">Pendientes</option>
+            <option value="REFUNDED">Reembolsados</option>
           </select>
         </div>
       </div>
@@ -97,21 +97,21 @@ export default function AdminOrdersPage() {
           </div>
         ) : filteredOrders.length === 0 ? (
           <div className="py-16 text-center text-zinc-500 text-xs">
-            No transactions found matching your search.
+            No se encontraron transacciones que coincidan con la búsqueda.
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
                 <tr className="border-b border-white/[0.08] text-zinc-400 uppercase text-[10px] font-bold tracking-wider bg-white/[0.02]">
-                  <th className="py-3 px-4">Order ID</th>
-                  <th className="py-3 px-4">Minecraft Player</th>
-                  <th className="py-3 px-4">Edition</th>
-                  <th className="py-3 px-4">Total Paid</th>
-                  <th className="py-3 px-4">Coupon</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4">Date</th>
-                  <th className="py-3 px-4 text-right">Details</th>
+                  <th className="py-3 px-4">Orden ID</th>
+                  <th className="py-3 px-4">Jugador Minecraft</th>
+                  <th className="py-3 px-4">Edición</th>
+                  <th className="py-3 px-4">Total Pagado</th>
+                  <th className="py-3 px-4">Cupón</th>
+                  <th className="py-3 px-4">Estado</th>
+                  <th className="py-3 px-4">Fecha</th>
+                  <th className="py-3 px-4 text-right">Detalles</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/[0.05]">
@@ -169,7 +169,7 @@ export default function AdminOrdersPage() {
                       <button
                         onClick={() => setSelectedOrder(order)}
                         className="p-1.5 text-zinc-400 hover:text-white hover:bg-white/[0.06] rounded transition-colors"
-                        title="View order details"
+                        title="Ver detalles de la orden"
                       >
                         <Eye className="w-3.5 h-3.5" />
                       </button>
@@ -199,7 +199,7 @@ export default function AdminOrdersPage() {
               </div>
               <div>
                 <h3 className="text-base font-bold text-white">
-                  Order Details #{selectedOrder.orderNumber}
+                  Detalles de la Orden #{selectedOrder.orderNumber}
                 </h3>
                 <span className="text-[11px] text-zinc-400">
                   {new Date(selectedOrder.createdAt).toLocaleString()}
@@ -217,18 +217,18 @@ export default function AdminOrdersPage() {
                 />
                 <div>
                   <div className="text-[9px] uppercase font-bold text-zinc-500">
-                    Recipient Player
+                    Jugador Receptor
                   </div>
                   <div className="text-sm font-bold text-white">
                     {selectedOrder.minecraftUsername} ({selectedOrder.minecraftEdition})
                   </div>
-                  <div className="text-zinc-400 text-[11px]">{selectedOrder.customerEmail || "Guest checkout"}</div>
+                  <div className="text-zinc-400 text-[11px]">{selectedOrder.customerEmail || "Compra como invitado"}</div>
                 </div>
               </div>
 
               {/* Items Purchased */}
               <div className="bg-[#090a0f] p-3.5 rounded-lg border border-white/[0.08] space-y-1.5">
-                <span className="font-bold text-zinc-300 block mb-1">Purchased Packages</span>
+                <span className="font-bold text-zinc-300 block mb-1">Paquetes Adquiridos</span>
                 {(() => {
                   try {
                     const parsed = JSON.parse(selectedOrder.items || "[]");
@@ -257,12 +257,12 @@ export default function AdminOrdersPage() {
                 </div>
                 {selectedOrder.discountTotal > 0 && (
                   <div className="flex justify-between text-amber-400">
-                    <span>Discount ({selectedOrder.couponCode})</span>
+                    <span>Descuento ({selectedOrder.couponCode})</span>
                     <span>-{formatCurrency(selectedOrder.discountTotal)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-xs font-bold text-white pt-1.5 border-t border-white/[0.06]">
-                  <span>Total Paid</span>
+                  <span>Total Pagado</span>
                   <span className="text-amber-300 font-extrabold">{formatCurrency(selectedOrder.total)}</span>
                 </div>
               </div>
@@ -270,7 +270,7 @@ export default function AdminOrdersPage() {
               {/* Delivery status */}
               <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-2.5 flex items-center space-x-2 text-emerald-300">
                 <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-emerald-400" />
-                <span>Console commands delivered & perks applied to Minecraft player profile.</span>
+                <span>Comandos de consola ejecutados y ventajas otorgadas al jugador.</span>
               </div>
             </div>
 
@@ -279,7 +279,7 @@ export default function AdminOrdersPage() {
                 onClick={() => setSelectedOrder(null)}
                 className="w-full py-2 rounded-lg text-xs font-semibold text-white bg-white/[0.06] hover:bg-white/[0.1] transition-colors"
               >
-                Close
+                Cerrar
               </button>
             </div>
           </div>

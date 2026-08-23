@@ -148,7 +148,7 @@ export function Navbar() {
 
   const userRole = (session?.user as any)?.role || "USER";
   const userEmail = session?.user?.email?.toLowerCase().trim() || "";
-  const isAdmin = userRole === "ADMIN" || userEmail === "angelriveradeveloper@gmail.com";
+  const isAdmin = userRole === "ADMIN" || userEmail === "admin@solarmc.net";
   const isPartner = userRole === "PARTNER" || isAdmin;
 
   const displayName = session?.user?.name || (session?.user as any)?.minecraftUsername || userEmail.split("@")[0] || "Mi Cuenta";

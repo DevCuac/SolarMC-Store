@@ -28,17 +28,17 @@ export function ProductCard({ product }: ProductCardProps) {
             </span>
           ) : (
             <span className="inline-block px-2.5 py-0.5 bg-[#181d2e]/60 text-[10px] font-bold uppercase tracking-wider text-gray-400 rounded">
-              PACKAGE
+              PAQUETE
             </span>
           )}
 
           <button
             onClick={() => setSelectedProduct(product)}
             className="text-xs font-semibold text-gray-400 hover:text-amber-300 flex items-center space-x-1 transition-colors px-2 py-0.5 rounded hover:bg-[#181d2e]"
-            title="View full perks and details"
+            title="Ver ventajas completas"
           >
             <Eye className="w-3.5 h-3.5" />
-            <span>Perks</span>
+            <span>Ventajas</span>
           </button>
         </div>
 
@@ -66,7 +66,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 onClick={() => setSelectedProduct(product)}
                 className="text-[11px] text-amber-400 hover:underline font-bold pt-0.5"
               >
-                +{product.perks.length - 2} more perks...
+                +{product.perks.length - 2} ventajas más...
               </button>
             )}
           </div>
@@ -77,7 +77,7 @@ export function ProductCard({ product }: ProductCardProps) {
       <div className="mt-6">
         <div className="flex items-baseline space-x-2 mb-3.5">
           <span className="text-2xl font-black text-white tracking-tight">
-            {isMonthly ? `From ${formatCurrency(product.price)}/mo` : formatCurrency(product.price)}
+            {isMonthly ? `Desde ${formatCurrency(product.price)}/mes` : formatCurrency(product.price)}
           </span>
           {product.originalPrice && product.originalPrice > product.price && (
             <span className="text-xs text-gray-500 line-through font-semibold">
@@ -93,12 +93,12 @@ export function ProductCard({ product }: ProductCardProps) {
           {inCartItem ? (
             <>
               <Check className="w-4 h-4 text-black" />
-              <span>Add Another ({inCartItem.quantity} in cart)</span>
+              <span>Añadir Otro ({inCartItem.quantity} en carrito)</span>
             </>
           ) : (
             <>
               <Plus className="w-4 h-4 text-black" />
-              <span>{isMonthly ? "View Plans / Add" : "Add to Cart"}</span>
+              <span>{isMonthly ? "Ver Planes / Añadir" : "Añadir al Carrito"}</span>
             </>
           )}
         </button>

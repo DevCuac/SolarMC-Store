@@ -7,18 +7,18 @@ import { CategoryIcon } from "@/components/ui/CategoryIcon";
 import { DEFAULT_CATEGORIES } from "@/types";
 
 const availableIconKeys = [
-  { key: "home", label: "Home (Zap)" },
-  { key: "prison", label: "Prison (Pickaxe)" },
-  { key: "universes", label: "Universes (Orbit)" },
-  { key: "dungeons", label: "Dungeons (Swords)" },
-  { key: "gens", label: "Gens (Boxes)" },
-  { key: "survival", label: "Survival (Tree)" },
-  { key: "global", label: "Global (Globe)" },
-  { key: "flame", label: "Flame / Fire" },
-  { key: "crown", label: "Crown / Royal" },
-  { key: "shield", label: "Shield / Armor" },
-  { key: "coins", label: "Coins / Economy" },
-  { key: "sparkles", label: "Sparkles / Magic" },
+  { key: "home", label: "Inicio (Rayo)" },
+  { key: "prison", label: "Prison (Pico)" },
+  { key: "universes", label: "Universes (Órbita)" },
+  { key: "dungeons", label: "Dungeons (Espadas)" },
+  { key: "gens", label: "Gens (Cajas)" },
+  { key: "survival", label: "Survival (Árbol)" },
+  { key: "global", label: "Global (Mundo)" },
+  { key: "flame", label: "Fuego / Llama" },
+  { key: "crown", label: "Corona / Rey" },
+  { key: "shield", label: "Escudo / Armadura" },
+  { key: "coins", label: "Monedas / Economía" },
+  { key: "sparkles", label: "Magia / Brillos" },
 ];
 
 export default function AdminCategoriesPage() {
@@ -46,7 +46,7 @@ export default function AdminCategoriesPage() {
         setCategories(DEFAULT_CATEGORIES);
       }
     } catch (e) {
-      toast.error("Failed to load categories");
+      toast.error("Error al cargar categorías");
     } finally {
       setLoading(false);
     }
@@ -83,7 +83,7 @@ export default function AdminCategoriesPage() {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name.trim()) {
-      toast.error("Category name is required");
+      toast.error("El nombre de la categoría es obligatorio");
       return;
     }
 
@@ -112,22 +112,22 @@ export default function AdminCategoriesPage() {
 
       if (res.ok) {
         toast.success(
-          editingCategory ? "Category updated successfully!" : "Category created successfully!"
+          editingCategory ? "¡Categoría actualizada con éxito!" : "¡Categoría creada con éxito!"
         );
         setIsModalOpen(false);
         loadCategories();
       } else {
-        toast.error(data.error || "Failed to save category");
+        toast.error(data.error || "Error al guardar categoría");
       }
     } catch (e) {
-      toast.error("Error saving category");
+      toast.error("Error al guardar categoría");
     } finally {
       setModalLoading(false);
     }
   };
 
   const handleDelete = async (id: string, name: string) => {
-    if (!confirm(`Are you sure you want to delete category "${name}" and its associated products?`)) return;
+    if (!confirm(`¿Estás seguro de eliminar la categoría "${name}" y todos sus productos asociados?`)) return;
 
     try {
       const res = await fetch(`/api/admin/categories/${id}`, {
@@ -135,13 +135,13 @@ export default function AdminCategoriesPage() {
       });
 
       if (res.ok) {
-        toast.success("Category deleted successfully");
+        toast.success("Categoría eliminada con éxito");
         setCategories((prev) => prev.filter((c) => c.id !== id));
       } else {
-        toast.error("Failed to delete category");
+        toast.error("Error al eliminar categoría");
       }
     } catch (e) {
-      toast.error("Error deleting category");
+      toast.error("Error al eliminar categoría");
     }
   };
 
@@ -150,84 +150,84 @@ export default function AdminCategoriesPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-black text-white">
-            Store Categories
+          <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+            Categorías de la Tienda
           </h1>
-          <p className="text-xs text-gray-400 mt-0.5">
-            Organize packages into gamemodes (Prison, Universes, Survival, Dungeons, Gens).
+          <p className="text-xs text-zinc-400 mt-1">
+            Organiza los paquetes y productos en modalidades (Prison, Universes, Survival, Dungeons, Gens).
           </p>
         </div>
 
         <button
           onClick={openCreateModal}
-          className="px-3.5 py-2 bg-[#ff9d00] hover:bg-[#ffad26] text-black text-xs font-black rounded-lg shadow-[0_0_12px_rgba(255,157,0,0.25)] hover:shadow-[0_0_18px_rgba(255,157,0,0.45)] transition-all flex items-center space-x-1.5 self-start sm:self-auto"
+          className="px-3.5 py-2 bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold rounded-lg shadow-sm transition-all flex items-center space-x-1.5 self-start sm:self-auto"
         >
           <Plus className="w-4 h-4 text-black" />
-          <span>New Category</span>
+          <span>Nueva Categoría</span>
         </button>
       </div>
 
       {/* Categories Table */}
-      <div className="bg-[#121522] border border-[#1e2336] rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.4)]">
+      <div className="bg-[#0e1017] border border-white/[0.08] rounded-xl overflow-hidden shadow-sm">
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin text-[#ff9d00]" />
+            <Loader2 className="w-7 h-7 animate-spin text-amber-400" />
           </div>
         ) : categories.length === 0 ? (
-          <div className="py-16 text-center text-gray-400">
-            No categories defined yet.
+          <div className="py-16 text-center text-zinc-500 text-xs">
+            No hay categorías definidas aún.
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="border-b border-[#1e2336] text-gray-400 uppercase tracking-wider bg-[#0e1019]">
-                  <th className="py-3 px-4">Icon</th>
-                  <th className="py-3 px-4">Name</th>
+                <tr className="border-b border-white/[0.08] text-zinc-400 uppercase text-[11px] font-semibold tracking-wider bg-white/[0.02]">
+                  <th className="py-3 px-4">Icono</th>
+                  <th className="py-3 px-4">Nombre</th>
                   <th className="py-3 px-4">Slug</th>
-                  <th className="py-3 px-4">Description</th>
-                  <th className="py-3 px-4">Products</th>
-                  <th className="py-3 px-4">Order</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
+                  <th className="py-3 px-4">Descripción</th>
+                  <th className="py-3 px-4">Productos</th>
+                  <th className="py-3 px-4">Orden</th>
+                  <th className="py-3 px-4 text-right">Acciones</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#181d2e]">
+              <tbody className="divide-y divide-white/[0.05]">
                 {categories.map((cat) => (
-                  <tr key={cat.id || cat.slug} className="hover:bg-[#161a2b] transition-colors">
+                  <tr key={cat.id || cat.slug} className="hover:bg-white/[0.02] transition-colors">
                     <td className="py-3 px-4">
-                      <div className="w-7 h-7 rounded bg-[#181d2e] border border-[#242b40] flex items-center justify-center">
-                        <CategoryIcon iconName={cat.icon || cat.slug} className="w-3.5 h-3.5" />
+                      <div className="w-7 h-7 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center">
+                        <CategoryIcon iconName={cat.icon || cat.slug} className="w-3.5 h-3.5 text-amber-400" />
                       </div>
                     </td>
-                    <td className="py-3 px-4 font-bold text-white">
+                    <td className="py-3 px-4 font-semibold text-white">
                       {cat.name}
                     </td>
-                    <td className="py-3 px-4 font-mono text-amber-400">
+                    <td className="py-3 px-4 font-mono text-amber-300">
                       {cat.slug}
                     </td>
-                    <td className="py-3 px-4 text-gray-400 max-w-xs truncate">
+                    <td className="py-3 px-4 text-zinc-400 max-w-xs truncate">
                       {cat.description || "—"}
                     </td>
                     <td className="py-3 px-4">
-                      <span className="px-2 py-0.5 bg-[#181d2e] text-gray-300 font-bold rounded text-[11px] border border-[#242b40]">
-                        {cat._count?.products ?? 0} pkgs
+                      <span className="px-2 py-0.5 bg-white/[0.03] text-zinc-300 font-semibold rounded text-[11px] border border-white/[0.06]">
+                        {cat._count?.products ?? 0} paquetes
                       </span>
                     </td>
-                    <td className="py-3 px-4 font-bold text-gray-400">
+                    <td className="py-3 px-4 font-semibold text-zinc-400">
                       {cat.sortOrder}
                     </td>
                     <td className="py-3 px-4 text-right space-x-1">
                       <button
                         onClick={() => openEditModal(cat)}
-                        className="p-1.5 bg-[#181d2e] hover:bg-[#22283e] text-gray-300 hover:text-white rounded transition-colors"
-                        title="Edit Category"
+                        className="p-1.5 text-zinc-400 hover:text-white hover:bg-white/[0.06] rounded transition-colors"
+                        title="Editar Categoría"
                       >
                         <Edit className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => handleDelete(cat.id, cat.name)}
-                        className="p-1.5 bg-red-950/30 hover:bg-red-900/50 text-red-400 hover:text-red-300 rounded transition-colors"
-                        title="Delete Category"
+                        className="p-1.5 text-zinc-500 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors"
+                        title="Eliminar Categoría"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -243,33 +243,33 @@ export default function AdminCategoriesPage() {
       {/* Create / Edit Category Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-modal">
-          <div className="bg-[#121522] border border-[#242b40] rounded-xl max-w-md w-full p-6 relative shadow-2xl overflow-hidden">
+          <div className="bg-[#11131c] border border-white/[0.1] rounded-xl max-w-md w-full p-6 relative shadow-2xl overflow-hidden">
             <button
               onClick={() => setIsModalOpen(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-white p-1.5 rounded-lg hover:bg-[#181d2e]"
+              className="absolute top-4 right-4 text-zinc-400 hover:text-white p-1.5 rounded-lg hover:bg-white/[0.05]"
             >
               <X className="w-5 h-5" />
             </button>
 
-            <div className="flex items-center space-x-3 mb-4 pb-3 border-b border-[#1e2336]">
-              <div className="w-9 h-9 rounded-lg bg-[#ff9d00]/10 border border-[#ff9d00]/30 flex items-center justify-center text-[#ff9d00]">
-                <Layers className="w-4.5 h-4.5" />
+            <div className="flex items-center space-x-2.5 mb-4 pb-3 border-b border-white/[0.08]">
+              <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                <Layers className="w-4 h-4" />
               </div>
-              <h3 className="text-lg font-black text-white">
-                {editingCategory ? "Edit Category" : "New Category"}
+              <h3 className="text-base font-bold text-white">
+                {editingCategory ? "Editar Categoría" : "Nueva Categoría"}
               </h3>
             </div>
 
             <form onSubmit={handleSave} className="space-y-3.5">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">
-                    Icon Style
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
+                    Estilo de Icono
                   </label>
                   <select
                     value={formData.icon}
                     onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                    className="w-full bg-[#0e1019] border border-[#1e2336] focus:border-[#ff9d00] rounded-lg px-2.5 py-1.5 text-xs text-white outline-none"
+                    className="w-full bg-[#090a0f] border border-white/[0.08] focus:border-amber-500/50 rounded-lg px-2.5 py-1.5 text-xs text-zinc-100 outline-none"
                   >
                     {availableIconKeys.map((item) => (
                       <option key={item.key} value={item.key}>
@@ -280,15 +280,15 @@ export default function AdminCategoriesPage() {
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">
-                    Category Name *
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
+                    Nombre de Categoría *
                   </label>
                   <input
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="e.g. Prison or Dungeons"
-                    className="w-full bg-[#0e1019] border border-[#1e2336] focus:border-[#ff9d00] rounded-lg px-2.5 py-1.5 text-xs text-white outline-none"
+                    placeholder="ej. Prison o Dungeons"
+                    className="w-full bg-[#090a0f] border border-white/[0.08] focus:border-amber-500/50 rounded-lg px-2.5 py-1.5 text-xs text-zinc-100 outline-none"
                     required
                   />
                 </div>
@@ -296,7 +296,7 @@ export default function AdminCategoriesPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
                     Slug
                   </label>
                   <input
@@ -304,53 +304,53 @@ export default function AdminCategoriesPage() {
                     value={formData.slug}
                     onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
                     placeholder="prison"
-                    className="w-full bg-[#0e1019] border border-[#1e2336] focus:border-[#ff9d00] rounded-lg px-2.5 py-1.5 text-xs text-white outline-none font-mono"
+                    className="w-full bg-[#090a0f] border border-white/[0.08] focus:border-amber-500/50 rounded-lg px-2.5 py-1.5 text-xs text-zinc-100 outline-none font-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">
-                    Sort Order
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
+                    Orden de Posición
                   </label>
                   <input
                     type="number"
                     value={formData.sortOrder}
                     onChange={(e) => setFormData({ ...formData, sortOrder: e.target.value })}
-                    className="w-full bg-[#0e1019] border border-[#1e2336] focus:border-[#ff9d00] rounded-lg px-2.5 py-1.5 text-xs text-white outline-none"
+                    className="w-full bg-[#090a0f] border border-white/[0.08] focus:border-amber-500/50 rounded-lg px-2.5 py-1.5 text-xs text-zinc-100 outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">
-                  Description
+                <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
+                  Descripción
                 </label>
                 <textarea
                   rows={2}
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Short description for this gamemode category..."
-                  className="w-full bg-[#0e1019] border border-[#1e2336] focus:border-[#ff9d00] rounded-lg px-2.5 py-1.5 text-xs text-white outline-none"
+                  placeholder="Breve descripción para la categoría o modalidad..."
+                  className="w-full bg-[#090a0f] border border-white/[0.08] focus:border-amber-500/50 rounded-lg px-2.5 py-1.5 text-xs text-zinc-100 outline-none"
                 />
               </div>
 
-              <div className="pt-3 border-t border-[#1e2336] flex justify-end space-x-2">
+              <div className="pt-3 border-t border-white/[0.08] flex justify-end space-x-2">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-3.5 py-1.5 rounded-lg text-xs font-bold text-gray-400 hover:text-white bg-[#181d2e]"
+                  className="px-3.5 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-white bg-white/[0.05]"
                 >
-                  Cancel
+                  Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={modalLoading}
-                  className="px-5 py-1.5 rounded-lg text-xs font-black text-black bg-[#ff9d00] hover:bg-[#ffad26] shadow-[0_0_12px_rgba(255,157,0,0.25)] disabled:opacity-50 flex items-center space-x-1.5"
+                  className="px-4 py-1.5 rounded-lg text-xs font-bold text-black bg-amber-500 hover:bg-amber-400 shadow-sm disabled:opacity-50 flex items-center space-x-1.5"
                 >
                   {modalLoading ? (
                     <Loader2 className="w-3.5 h-3.5 animate-spin text-black" />
                   ) : (
-                    <span>Save Category</span>
+                    <span>Guardar Categoría</span>
                   )}
                 </button>
               </div>

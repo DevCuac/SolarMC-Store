@@ -22,56 +22,56 @@ export function HeroRankClaim() {
           <div>
             <div className="flex items-center space-x-2">
               <span className="px-2 py-0.5 rounded bg-[#ff9d00]/15 text-[#ff9d00] font-black text-[10px] tracking-wider uppercase border border-[#ff9d00]/30">
-                Free Starter
+                Rango Inicial Gratuito
               </span>
             </div>
             <h2 className="text-xl sm:text-2xl font-black text-white tracking-wide mt-1">
-              Claim Your Free Rank
+              Reclama Tu Rango Gratis
             </h2>
             <p className="text-xs text-gray-400 mt-0.5">
-              Unlock awesome in-game perks instantly when you claim your starter rank.
+              Desbloquea ventajas increíbles en el juego al instante al reclamar tu rango de bienvenida.
             </p>
           </div>
         </div>
 
-        {/* 2x2 Perks Grid (Linear & Sharp) */}
+        {/* 2x2 Perks Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-5">
           <div className="flex items-center space-x-2.5 bg-[#0e1019] border border-[#1a1f30] hover:border-[#28314a] rounded-lg px-3.5 py-2.5 transition-colors">
             <span className="w-2 h-2 rounded-full bg-[#ff9d00] shadow-[0_0_6px_#ff9d00] flex-shrink-0" />
             <span className="text-xs font-semibold text-gray-200">
-              More Player Vaults
+              Más Baúles de Jugador (PV)
             </span>
           </div>
 
           <div className="flex items-center space-x-2.5 bg-[#0e1019] border border-[#1a1f30] hover:border-[#28314a] rounded-lg px-3.5 py-2.5 transition-colors">
             <span className="w-2 h-2 rounded-full bg-[#ff9d00] shadow-[0_0_6px_#ff9d00] flex-shrink-0" />
             <span className="text-xs font-semibold text-gray-200">
-              Special Starter Kit
+              Kit Especial de Inicio
             </span>
           </div>
 
           <div className="flex items-center space-x-2.5 bg-[#0e1019] border border-[#1a1f30] hover:border-[#28314a] rounded-lg px-3.5 py-2.5 transition-colors">
             <span className="w-2 h-2 rounded-full bg-[#ff9d00] shadow-[0_0_6px_#ff9d00] flex-shrink-0" />
             <span className="text-xs font-semibold text-gray-200">
-              Gamemode specific perks
+              Ventajas en todas las modalidades
             </span>
           </div>
 
           <div className="flex items-center space-x-2.5 bg-[#0e1019] border border-[#1a1f30] hover:border-[#28314a] rounded-lg px-3.5 py-2.5 transition-colors">
             <span className="w-2 h-2 rounded-full bg-[#ff9d00] shadow-[0_0_6px_#ff9d00] flex-shrink-0" />
             <span className="text-xs font-semibold text-gray-200">
-              ...and much, much more!
+              ¡...y mucho más!
             </span>
           </div>
         </div>
       </div>
 
-      {/* Button with linear style & hover glow */}
+      {/* Button with linear style */}
       <button
         onClick={() => setIsRankModalOpen(true)}
         className="mt-5 w-full py-3 px-5 rounded-lg font-black text-black text-xs sm:text-sm tracking-wide bg-[#ff9d00] hover:bg-[#ffad26] shadow-[0_0_15px_rgba(255,157,0,0.3)] hover:shadow-[0_0_25px_rgba(255,157,0,0.5)] active:scale-[0.99] transition-all duration-200 flex items-center justify-center space-x-2"
       >
-        <span>Claim your free rank now</span>
+        <span>Reclamar mi rango gratis ahora</span>
         <ChevronRight className="w-4 h-4 text-black" />
       </button>
     </div>

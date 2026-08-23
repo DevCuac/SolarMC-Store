@@ -9,7 +9,7 @@ export async function checkAdminSession() {
 
   const role = (session.user as any).role;
   const email = session.user.email?.toLowerCase().trim();
-  const isAdmin = role === "ADMIN" || email === "angelriveradeveloper@gmail.com" || email === "admin@oplegends.com";
+  const isAdmin = role === "ADMIN" || email === "admin@solarmc.net" || email === "admin@solarstore.com";
 
   if (!isAdmin) {
     return { authorized: false, session };

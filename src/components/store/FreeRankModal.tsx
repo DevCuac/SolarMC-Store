@@ -19,7 +19,7 @@ export function FreeRankModal() {
   const handleClaim = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!playerInput.trim()) {
-      toast.error("Please enter your Minecraft username");
+      toast.error("Por favor ingresa tu usuario de Minecraft");
       return;
     }
 
@@ -46,15 +46,15 @@ export function FreeRankModal() {
           });
         } catch {}
 
-        toast.success("Free Rank Claimed Successfully!", {
+        toast.success("¡Rango Gratuito Reclamado!", {
           description: data.message,
         });
         setIsRankModalOpen(false);
       } else {
-        toast.error(data.error || "Failed to claim rank");
+        toast.error(data.error || "No se pudo reclamar el rango");
       }
     } catch (e) {
-      toast.error("Failed to connect to claim service");
+      toast.error("Error al conectar con el servidor de reclamos");
     } finally {
       setLoading(false);
     }
@@ -78,10 +78,10 @@ export function FreeRankModal() {
           </div>
 
           <h3 className="text-xl font-black text-white tracking-wide">
-            Claim Your Free Starter Rank
+            Reclama Tu Rango Inicial Gratis
           </h3>
           <p className="text-xs text-gray-400 mt-1">
-            Unlock exclusive kits, player vaults, and permanent server perks at zero cost!
+            ¡Desbloquea kits exclusivos, baúles de jugador y ventajas permanentes sin costo!
           </p>
         </div>
 
@@ -102,13 +102,13 @@ export function FreeRankModal() {
             />
             <div className="flex-1">
               <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-0.5">
-                Minecraft Username
+                Usuario de Minecraft
               </label>
               <input
                 type="text"
                 value={playerInput}
                 onChange={(e) => setPlayerInput(e.target.value)}
-                placeholder="Enter username (e.g. cuac_xdpe)"
+                placeholder="Ingresa tu usuario (ej. cuac_xdpe)"
                 className="w-full bg-[#181d2e] border border-[#242b40] focus:border-[#ff9d00] rounded px-2.5 py-1 text-xs text-white font-bold placeholder-gray-500 outline-none transition-colors"
                 required
               />
@@ -127,7 +127,7 @@ export function FreeRankModal() {
               }`}
             >
               <Laptop className="w-3.5 h-3.5" />
-              <span>Java Edition</span>
+              <span>Edición Java</span>
             </button>
             <button
               type="button"
@@ -139,7 +139,7 @@ export function FreeRankModal() {
               }`}
             >
               <Smartphone className="w-3.5 h-3.5" />
-              <span>Bedrock Edition</span>
+              <span>Edición Bedrock</span>
             </button>
           </div>
 
@@ -147,20 +147,20 @@ export function FreeRankModal() {
           <div className="bg-[#0e1019] rounded-lg p-3.5 border border-[#1a1f30] space-y-1.5 text-xs">
             <div className="font-bold text-gray-300 flex items-center space-x-1.5">
               <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-              <span>What you receive instantly:</span>
+              <span>Lo que recibes al instante:</span>
             </div>
             <div className="space-y-1 text-gray-400">
               <div className="flex items-center space-x-2">
                 <Check className="w-3 h-3 text-[#ff9d00]" />
-                <span>1x Private Player Vault (/pv 1)</span>
+                <span>1x Baúl Privado de Jugador (/pv 1)</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Check className="w-3 h-3 text-[#ff9d00]" />
-                <span>Special Starter Kit with basic armor & tools</span>
+                <span>Kit Especial de Inicio con armadura y herramientas</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Check className="w-3 h-3 text-[#ff9d00]" />
-                <span>Access to /feed and community commands</span>
+                <span>Acceso a /feed y comandos comunitarios</span>
               </div>
             </div>
           </div>
@@ -174,10 +174,10 @@ export function FreeRankModal() {
             {loading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin text-black" />
-                <span>Dispatching Rank...</span>
+                <span>Entregando Rango...</span>
               </>
             ) : (
-              <span>Confirm & Claim Rank</span>
+              <span>Confirmar & Reclamar Rango</span>
             )}
           </button>
         </form>

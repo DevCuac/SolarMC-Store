@@ -30,10 +30,10 @@ export function CouponSection() {
         </div>
         <div>
           <h4 className="text-base font-black text-white tracking-wide">
-            Have a Coupon Code?
+            ¿Tienes un Código de Descuento?
           </h4>
           <p className="text-xs text-gray-400">
-            Enter your code below and it will be applied at checkout
+            Ingresa tu código promocional aquí para aplicarlo a tu compra
           </p>
         </div>
       </div>
@@ -45,17 +45,17 @@ export function CouponSection() {
             <div className="flex items-center space-x-2">
               <Check className="w-4 h-4 text-amber-400" />
               <span className="text-xs font-bold text-amber-300">
-                Code: {coupon.code} (
+                Cupón: {coupon.code} (
                 {coupon.discountType === "PERCENTAGE"
-                  ? `${coupon.discountValue}% OFF`
-                  : `$${coupon.discountValue.toFixed(2)} OFF`}
+                  ? `${coupon.discountValue}% DTO`
+                  : `$${coupon.discountValue.toFixed(2)} DTO`}
                 )
               </span>
             </div>
             <button
               onClick={removeCoupon}
               className="p-1 text-gray-400 hover:text-red-400 transition-colors"
-              title="Remove coupon"
+              title="Eliminar cupón"
             >
               <X className="w-4 h-4" />
             </button>
@@ -66,8 +66,8 @@ export function CouponSection() {
               type="text"
               value={inputCode}
               onChange={(e) => setInputCode(e.target.value)}
-              placeholder="Coupon code (e.g. WELCOME10)"
-              className="w-full sm:w-60 bg-[#0e1019] border border-[#1e2336] focus:border-[#ff9d00] rounded-lg px-3.5 py-2 text-xs text-white placeholder-gray-500 outline-none transition-colors"
+              placeholder="Código (ej. WELCOME10)"
+              className="w-full sm:w-60 bg-[#0e1019] border border-[#1e2336] focus:border-[#ff9d00] rounded-lg px-3.5 py-2 text-xs text-white placeholder-gray-500 outline-none transition-colors uppercase font-mono"
             />
             <button
               type="submit"
@@ -77,7 +77,7 @@ export function CouponSection() {
               {loading ? (
                 <Loader2 className="w-4 h-4 animate-spin text-black" />
               ) : (
-                <span>Apply</span>
+                <span>Aplicar</span>
               )}
             </button>
           </form>
