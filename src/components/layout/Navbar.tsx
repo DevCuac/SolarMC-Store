@@ -34,8 +34,8 @@ export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
 
-  // Do not render storefront Navbar/Hero on admin dashboard pages
-  if (pathname?.startsWith("/admin")) {
+  // Do not render storefront Navbar/Hero on admin or dedicated profile dashboard pages
+  if (pathname?.startsWith("/admin") || pathname?.startsWith("/profile")) {
     return null;
   }
 

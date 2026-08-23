@@ -6,17 +6,6 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('🌱 Starting SolarMC database seeding with generic mock data...');
 
-  // Clean up any previous personal test accounts if they exist
-  try {
-    await prisma.user.deleteMany({
-      where: {
-        email: {
-          in: ['angelriveradeveloper@gmail.com', 'angel@example.com']
-        }
-      }
-    });
-  } catch (e) {}
-
   // 1. Create Admins, Partners & Users
   const adminPassword = await bcrypt.hash('admin123', 10);
   const partnerPassword = await bcrypt.hash('partner123', 10);

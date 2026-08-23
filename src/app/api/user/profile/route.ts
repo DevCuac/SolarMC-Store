@@ -13,14 +13,19 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userId = (session.user as any).id;
+    const sessionUser = session.user as any;
+    const userId = sessionUser.id;
     const userEmail = session.user.email?.toLowerCase().trim();
+    const sessionName = session.user.name?.trim();
+    const sessionMcUsername = sessionUser.minecraftUsername?.trim();
 
-    const user = await prisma.user.findFirst({
+    // 1. Try to find the user in the database
+    let user = await prisma.user.findFirst({
       where: {
         OR: [
           ...(userId ? [{ id: userId }] : []),
           ...(userEmail ? [{ email: userEmail }] : []),
+          ...(sessionMcUsername ? [{ minecraftUsername: sessionMcUsername }] : []),
         ],
       },
       include: {
@@ -31,6 +36,38 @@ export async function GET() {
       },
     });
 
+    // 2. If user doesn't exist yet in the database (e.g. logged in via OAuth or quick MC), create it!
+    if (!user) {
+      const emailToUse = userEmail || (sessionMcUsername ? `${sessionMcUsername.toLowerCase()}@player.local` : `user_${Date.now()}@solarmc.net`);
+      const nameToUse = sessionName || sessionMcUsername || emailToUse.split("@")[0];
+      const roleToUse = sessionUser.role || (emailToUse === "admin@solarmc.net" ? "ADMIN" : "USER");
+
+      try {
+        user = await prisma.user.create({
+          data: {
+            name: nameToUse,
+            email: emailToUse,
+            role: roleToUse,
+            minecraftUsername: sessionMcUsername || nameToUse,
+            minecraftEdition: sessionUser.minecraftEdition || "Java",
+          },
+          include: {
+            orders: true,
+            accounts: true,
+          },
+        });
+      } catch (createErr) {
+        // If creation fails due to duplicate email, fetch by email
+        user = await prisma.user.findFirst({
+          where: { email: emailToUse },
+          include: {
+            orders: { orderBy: { createdAt: "desc" } },
+            accounts: true,
+          },
+        });
+      }
+    }
+
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
@@ -38,18 +75,18 @@ export async function GET() {
     return NextResponse.json({
       user: {
         id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        minecraftUsername: user.minecraftUsername,
-        minecraftEdition: user.minecraftEdition || "Java",
+        name: user.name || sessionName || "",
+        email: user.email || userEmail || "",
+        role: user.role || sessionUser.role || "USER",
+        minecraftUsername: user.minecraftUsername || sessionMcUsername || "",
+        minecraftEdition: user.minecraftEdition || sessionUser.minecraftEdition || "Java",
         creatorCode: user.creatorCode,
         creatorCommissionRate: user.creatorCommissionRate || 10,
         discordId: user.discordId,
         discordUsername: user.discordUsername,
         googleId: user.googleId,
         createdAt: user.createdAt,
-        orders: user.orders.map((o) => ({
+        orders: user.orders ? user.orders.map((o) => ({
           id: o.id,
           orderNumber: o.orderNumber,
           total: o.total,
@@ -60,8 +97,8 @@ export async function GET() {
           status: o.status,
           items: typeof o.items === "string" ? JSON.parse(o.items || "[]") : o.items,
           createdAt: o.createdAt,
-        })),
-        connectedAccounts: user.accounts.map((a) => a.provider),
+        })) : [],
+        connectedAccounts: user.accounts ? user.accounts.map((a) => a.provider) : [],
       },
     });
   } catch (error: any) {
@@ -77,23 +114,36 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userId = (session.user as any).id;
+    const sessionUser = session.user as any;
+    const userId = sessionUser.id;
     const userEmail = session.user.email?.toLowerCase().trim();
+    const sessionMcUsername = sessionUser.minecraftUsername?.trim();
     const body = await req.json();
 
     const { name, minecraftUsername, minecraftEdition, newPassword, currentPassword } = body;
 
-    const user = await prisma.user.findFirst({
+    let user = await prisma.user.findFirst({
       where: {
         OR: [
           ...(userId ? [{ id: userId }] : []),
           ...(userEmail ? [{ email: userEmail }] : []),
+          ...(sessionMcUsername ? [{ minecraftUsername: sessionMcUsername }] : []),
         ],
       },
     });
 
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      // Auto-create if updating
+      const emailToUse = userEmail || `${(minecraftUsername || "user").toLowerCase()}@player.local`;
+      user = await prisma.user.create({
+        data: {
+          name: name?.trim() || emailToUse.split("@")[0],
+          email: emailToUse,
+          role: sessionUser.role || "USER",
+          minecraftUsername: minecraftUsername?.trim() || "Steve",
+          minecraftEdition: minecraftEdition || "Java",
+        },
+      });
     }
 
     const updateData: any = {};
@@ -124,6 +174,7 @@ export async function PUT(req: Request) {
         id: updated.id,
         name: updated.name,
         email: updated.email,
+        role: updated.role,
         minecraftUsername: updated.minecraftUsername,
         minecraftEdition: updated.minecraftEdition,
       },
